@@ -146,4 +146,10 @@ Deleting objects.
 
 Copying objects.
 
+Input fields.
+
+Binding inputs to properties.
+
 Navigation (Next card, previous card, go to #, go to name)
+
+Self hosting of editor
