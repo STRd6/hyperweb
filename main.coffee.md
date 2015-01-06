@@ -5,9 +5,6 @@ Exploring the magic of HyperCard.
 
 We'll need to be able to create a new card, add buttons, scripts, interactions.
 
-    global.say = (text) ->
-      alert text
-
     deck =
       cards: [
         objects: []
@@ -60,11 +57,23 @@ The viewer interprets the data of the card object and presents in the HTML DOM.
         if object = e.target.$object
           object.trigger("click", e)
 
+We're currently doing a jQuery-esque thing for tracking events bound to objects.
+It's probably not the worst but it could be better.
+
+Keep a list of all event handlers registered from the scripts of objects so
+that when events occur we can call the methods that were registered.
+
       handlers = []
+
+This `proto` holds all the methods that are available on objects in the deck.
+
+Advantages are that it is lightweight, disadvantages are that it can easily be
+shadowed accidentally.
+
+Look into using {SUPER: SYSTEM}
 
       proto =
         click: (fn) ->
-          # TODO: This is dumb
           handlers.push [this, "click", fn]
 
         trigger: (method, args...) ->
@@ -76,12 +85,15 @@ The viewer interprets the data of the card object and presents in the HTML DOM.
       hydrate = (object) ->
         return object.$element if object.$element
 
+Here we initialize the object
+
         # Init Code from Script
         object.__proto__ = proto
         code = CoffeeScript.compile(object.script, bare: true)
         Function(code).call(object)
 
         # TODO: Observable bindings for content and attributes
+        # TODO: Refresh element if type changes?
         element = document.createElement object.type ? "div"
         element.textContent = object.text
 
@@ -106,10 +118,19 @@ The viewer interprets the data of the card object and presents in the HTML DOM.
         # Render each object's DOM node into the DOM
         root.objects.forEach (object) ->
           container.appendChild hydrate object
-      
+
       container: container
 
-    document.body.appendChild Viewer(deck).container
+    viewer = Viewer(deck)
+
+    # TODO: What to do about all these globals?
+    global.Card = Card
+    global.say = (text) ->
+      alert text
+    global.deck = deck
+    global.nextCard = viewer.nextCard
+
+    document.body.appendChild viewer.container
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.
