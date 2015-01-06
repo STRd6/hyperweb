@@ -36,10 +36,7 @@
 <p>We&#39;ll need to be able to create a new card, add buttons, scripts, interactions.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
-  alert text
-
-deck =
+            <div class="content"><pre><code class="lang-coffeescript">deck =
   cards: [
     objects: []
   ]
@@ -97,13 +94,40 @@ properties or sub-components.</p>
   container.addEventListener <span class="string">"click"</span>, (e) -&gt;
     <span class="comment"># TODO: May need to handle bubbling</span>
     <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)
+      object.trigger(<span class="string">"click"</span>, e)</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>We&#39;re currently doing a jQuery-esque thing for tracking events bound to objects.
+It&#39;s probably not the worst but it could be better.</p>
+<p>Keep a list of all event handlers registered from the scripts of objects so
+that when events occur we can call the methods that were registered.</p>
 
-  handlers = []
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">  handlers = []</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>This <code>proto</code> holds all the methods that are available on objects in the deck.</p>
+<p>Advantages are that it is lightweight, disadvantages are that it can easily be
+shadowed accidentally.</p>
+<p>Look into using {SUPER: SYSTEM}</p>
 
-  proto =
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">  proto =
     click: (fn) -&gt;
-      <span class="comment"># TODO: This is dumb</span>
       handlers.push [<span class="keyword">this</span>, <span class="string">"click"</span>, fn]
 
     trigger: (method, args...) -&gt;
@@ -113,14 +137,26 @@ properties or sub-components.</p>
           fn.apply(host, args)
 
   <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
-    <span class="keyword">return</span> object.$element <span class="keyword">if</span> object.$element
+    <span class="keyword">return</span> object.$element <span class="keyword">if</span> object.$element</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Here we initialize the object</p>
 
-    <span class="comment"># Init Code from Script</span>
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
     object.__proto__ = proto
     code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
     Function(code).call(object)
 
     <span class="comment"># TODO: Observable bindings for content and attributes</span>
+    <span class="comment"># TODO: Refresh element if type changes?</span>
     element = document.createElement object.type ? <span class="string">"div"</span>
     element.textContent = object.text
 
@@ -148,15 +184,24 @@ properties or sub-components.</p>
 
   container: container
 
-document.body.appendChild Viewer(deck).container</code></pre>
+viewer = Viewer(deck)
+
+<span class="comment"># TODO: What to do about all these globals?</span>
+global.Card = Card
+global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
+  alert text
+global.deck = deck
+global.nextCard = viewer.nextCard
+
+document.body.appendChild viewer.container</code></pre>
 </div>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-7">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>An editor is built into the default viewer for modifying the data of a card on
 the fly.</p>
@@ -169,10 +214,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-8">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Adding objects, moving them around.</p>
 <p>Executing click handlers (play sound, go to card, etc.)</p>
