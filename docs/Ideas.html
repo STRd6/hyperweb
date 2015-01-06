@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>index</title>
+  <title>Ideas</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,10 +18,10 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="hyperweb">Hyperweb</h1>
+              <h1 id="ideas">Ideas</h1>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">
+            <div class="content"><pre><code>
 </code></pre>
 </div>
         </li>
@@ -32,43 +32,11 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Exploring the magic of HyperCard.</p>
-<p>We&#39;ll need to be able to create a new card, add buttons, scripts, interactions.</p>
+              <h2 id="bootstrapping">Bootstrapping</h2>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">deck =
-  cards: [
-    objects: []
-  ]
-
-<span class="function"><span class="title">Card</span></span> = -&gt;
-  objects: []
-
-newCardButton =
-  type: <span class="string">"button"</span>
-  text: <span class="string">"New Card"</span>
-  script: <span class="string">"""
-    @click -&gt;
-      deck.cards.push Card()
-  """</span>
-
-testButton =
-  type: <span class="string">"button"</span>
-  text: <span class="string">"Test"</span>
-  script: <span class="string">"""
-    @click -&gt;
-      say "Hello"
-  """</span>
-
-nextCardButton =
-  type: <span class="string">"button"</span>
-  text: <span class="string">"Next"</span>
-  script: <span class="string">"""
-    @click -&gt;
-      nextCard()
-  """</span>
-
-controlButtons = [newCardButton, testButton, nextCardButton]</code></pre>
+            <div class="content"><pre><code>
+</code></pre>
 </div>
         </li>
         
@@ -78,23 +46,17 @@ controlButtons = [newCardButton, testButton, nextCardButton]</code></pre>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>A card is simply a JSON object. A card can therefore contain any number of
-properties or sub-components.</p>
-<p>The viewer interprets the data of the card object and presents in the HTML DOM.</p>
+              <p>For the editor to be self hosting we need some tiny kernel that can start up
+and process json objects.</p>
+<p>One possibility is to have a kernel that is essentially <code>eval</code> which then
+bootstraps the system by evaluating the script field of objects of type <code>exec</code>.</p>
+<p>The kernel can also have one method to add additional type handlers. That may be
+enough to get everything running.</p>
+<h2 id="types">Types</h2>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Viewer</span></span> = (deck) -&gt;
-  currentCardIndex = <span class="number">0</span>
-  currentCard = deck.cards[currentCardIndex]
-
-  container = document.createElement(<span class="string">"div"</span>)
-  controls = document.createElement(<span class="string">"controls"</span>)
-  container.appendChild controls
-
-  container.addEventListener <span class="string">"click"</span>, (e) -&gt;
-    <span class="comment"># TODO: May need to handle bubbling</span>
-    <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)</code></pre>
+            <div class="content"><pre><code>
+</code></pre>
 </div>
         </li>
         
@@ -104,13 +66,15 @@ properties or sub-components.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>We&#39;re currently doing a jQuery-esque thing for tracking events bound to objects.
-It&#39;s probably not the worst but it could be better.</p>
-<p>Keep a list of all event handlers registered from the scripts of objects so
-that when events occur we can call the methods that were registered.</p>
+              <p>We&#39;ll want to be able to register templates for various card types. Templates
+should be jade or similar.</p>
+<p>When a card with a type that matches a template is created it will render that
+template into the DOM.</p>
+<h2 id="data-binding">Data-Binding</h2>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  handlers = []</code></pre>
+            <div class="content"><pre><code>
+</code></pre>
 </div>
         </li>
         
@@ -120,24 +84,14 @@ that when events occur we can call the methods that were registered.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>This <code>proto</code> holds all the methods that are available on objects in the deck.</p>
-<p>Advantages are that it is lightweight, disadvantages are that it can easily be
-shadowed accidentally.</p>
-<p>Look into using {SUPER: SYSTEM}</p>
+              <p>Having bi-directional live data binding will be really nice. Like binding a form
+with R,G,B fields to the background color of an object, or binding user input
+to an event stream.</p>
+<h2 id="publishing">Publishing</h2>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  proto =
-    click: (fn) -&gt;
-      handlers.push [<span class="keyword">this</span>, <span class="string">"click"</span>, fn]
-
-    trigger: (method, args...) -&gt;
-      self = <span class="keyword">this</span>
-      handlers.forEach ([host, type, fn]) -&gt;
-        <span class="keyword">if</span> host <span class="keyword">is</span> self <span class="keyword">and</span> type <span class="keyword">is</span> method
-          fn.apply(host, args)
-
-  <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
-    <span class="keyword">return</span> object.$element <span class="keyword">if</span> object.$element</code></pre>
+            <div class="content"><pre><code>
+</code></pre>
 </div>
         </li>
         
@@ -147,53 +101,13 @@ shadowed accidentally.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Here we initialize the object</p>
+              <p>Decks should bundle the editor and runtime when publishing so that anyone can
+modify, remix, and republish.</p>
+<h2 id="additional-concerns">Additional concerns</h2>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
-    object.__proto__ = proto
-    code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
-    Function(code).call(object)
-
-    <span class="comment"># TODO: Observable bindings for content and attributes</span>
-    <span class="comment"># TODO: Refresh element if type changes?</span>
-    element = document.createElement object.type ? <span class="string">"div"</span>
-    element.textContent = object.text
-
-    element.$object = object
-
-    object.$element = element
-
-  controlButtons.forEach (button) -&gt;
-    controls.appendChild hydrate button
-
-  objectAdded: (object) -&gt;
-    container.appendChild hydrate object
-
-  objectRemoved: (object) -&gt;
-    container.removeChild object.$element
-
-  nextCard: -&gt;
-    currentCardIndex += <span class="number">1</span>
-    currentCard = deck.cards[currentCardIndex]
-
-  render: -&gt;
-    <span class="comment"># Render each object's DOM node into the DOM</span>
-    root.objects.forEach (object) -&gt;
-      container.appendChild hydrate object
-
-  container: container
-
-viewer = Viewer(deck)
-
-<span class="comment"># TODO: What to do about all these globals?</span>
-global.Card = Card
-global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
-  alert text
-global.deck = deck
-global.nextCard = viewer.nextCard
-
-document.body.appendChild viewer.container</code></pre>
+            <div class="content"><pre><code>
+</code></pre>
 </div>
         </li>
         
@@ -203,33 +117,11 @@ document.body.appendChild viewer.container</code></pre>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>An editor is built into the default viewer for modifying the data of a card on
-the fly.</p>
-<h2 id="features">Features</h2>
+              <p>How do dependencies and requirements work?</p>
+<p>How do we manage versioning the bundled editor and runtime?</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-8">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              <p>Adding objects, moving them around.</p>
-<p>Executing click handlers (play sound, go to card, etc.)</p>
-<p>Deleting objects.</p>
-<p>Copying objects.</p>
-<p>Input fields.</p>
-<p>Binding inputs to properties.</p>
-<p>Navigation (Next card, previous card, go to #, go to name)</p>
-<p>Self hosting of editor</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">
+            <div class="content"><pre><code>
 </code></pre>
 </div>
         </li>
