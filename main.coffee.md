@@ -18,7 +18,15 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       text: "New Card"
       script: """
         @click ->
-          deck.cards.push Card()
+          editor.newCard()
+      """
+
+    newImageButton =
+      type: "button"
+      text: "New Image"
+      script: """
+        @click ->
+          
       """
 
     testButton =
@@ -34,24 +42,23 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       text: "Next"
       script: """
         @click ->
-          nextCard()
+          editor.nextCard()
       """
 
     controlButtons = [newCardButton, testButton, nextCardButton]
 
+    {exec} = require "./util"
+
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
 
-The viewer interprets the data of the card object and presents in the HTML DOM.
+The editor/viewer interprets the data of the card object and presents in the HTML DOM.
 
-    Viewer = (deck) ->
+    Editor = (deck) ->
       currentCardIndex = 0
       currentCard = deck.cards[currentCardIndex]
 
       container = document.createElement("div")
-      controls = document.createElement("controls")
-      container.appendChild controls
-
       container.addEventListener "click", (e) ->
         # TODO: May need to handle bubbling
         if object = e.target.$object
@@ -90,7 +97,8 @@ Here we initialize the object
         # Init Code from Script
         object.__proto__ = proto
         code = CoffeeScript.compile(object.script, bare: true)
-        Function(code).call(object)
+        exec code, object,
+          editor: self
 
         # TODO: Observable bindings for content and attributes
         # TODO: Refresh element if type changes?
@@ -101,36 +109,39 @@ Here we initialize the object
 
         object.$element = element
 
-      controlButtons.forEach (button) ->
-        controls.appendChild hydrate button
-
-      objectAdded: (object) ->
+      addObject = (object) ->
         container.appendChild hydrate object
 
-      objectRemoved: (object) ->
-        container.removeChild object.$element
+      self =
+        addObject: addObject
 
-      nextCard: ->
-        currentCardIndex += 1
-        currentCard = deck.cards[currentCardIndex]
+        objectRemoved: (object) ->
+          container.removeChild object.$element
 
-      render: ->
-        # Render each object's DOM node into the DOM
-        root.objects.forEach (object) ->
-          container.appendChild hydrate object
+        nextCard: ->
+          currentCardIndex += 1
+          currentCard = deck.cards[currentCardIndex]
 
-      container: container
+        newCard: (data={}) ->
+          deck.cards.push Card data
 
-    viewer = Viewer(deck)
+        render: ->
+          # Render each object's DOM node into the DOM
+          root.objects.forEach (object) ->
+            container.appendChild hydrate object
 
-    # TODO: What to do about all these globals?
-    global.Card = Card
+        container: container
+
+      controlButtons.forEach addObject
+      
+      return self
+
+    editor = Editor(deck)
+
     global.say = (text) ->
       alert text
-    global.deck = deck
-    global.nextCard = viewer.nextCard
 
-    document.body.appendChild viewer.container
+    document.body.appendChild editor.container
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.
