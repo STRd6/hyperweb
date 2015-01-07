@@ -26,7 +26,9 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       text: "New Image"
       script: """
         @click ->
-          
+          editor.addObject
+            type: "img"
+            src: "https://trello-attachments.s3.amazonaws.com/54a60b08f586e1cafdef3113/350x247/b4e92ef573aa2723d6b16330fa53548d/HyperCardbird-e1338220256722.jpg"
       """
 
     testButton =
@@ -45,7 +47,7 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
           editor.nextCard()
       """
 
-    controlButtons = [newCardButton, testButton, nextCardButton]
+    controlButtons = [newCardButton, testButton, nextCardButton, newImageButton]
 
     {exec} = require "./util"
 
@@ -95,15 +97,18 @@ Look into using {SUPER: SYSTEM}
 Here we initialize the object
 
         # Init Code from Script
-        object.__proto__ = proto
-        code = CoffeeScript.compile(object.script, bare: true)
-        exec code, object,
-          editor: self
+        if object.script
+          object.__proto__ = proto
+          code = CoffeeScript.compile(object.script, bare: true)
+          exec code, object,
+            editor: self
 
         # TODO: Observable bindings for content and attributes
         # TODO: Refresh element if type changes?
+        # TODO: Templates?
         element = document.createElement object.type ? "div"
         element.textContent = object.text
+        element.src = object.src
 
         element.$object = object
 
@@ -124,11 +129,6 @@ Here we initialize the object
 
         newCard: (data={}) ->
           deck.cards.push Card data
-
-        render: ->
-          # Render each object's DOM node into the DOM
-          root.objects.forEach (object) ->
-            container.appendChild hydrate object
 
         container: container
 
