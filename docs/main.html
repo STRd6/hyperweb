@@ -57,7 +57,9 @@ newImageButton =
   text: <span class="string">"New Image"</span>
   script: <span class="string">"""
     @click -&gt;
-
+      editor.addObject
+        type: "img"
+        src: "https://trello-attachments.s3.amazonaws.com/54a60b08f586e1cafdef3113/350x247/b4e92ef573aa2723d6b16330fa53548d/HyperCardbird-e1338220256722.jpg"
   """</span>
 
 testButton =
@@ -76,7 +78,7 @@ nextCardButton =
       editor.nextCard()
   """</span>
 
-controlButtons = [newCardButton, testButton, nextCardButton]
+controlButtons = [newCardButton, testButton, nextCardButton, newImageButton]
 
 {exec} = require <span class="string">"./util"</span></code></pre>
 </div>
@@ -158,15 +160,18 @@ shadowed accidentally.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
-    object.__proto__ = proto
-    code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
-    exec code, object,
-      editor: self
+    <span class="keyword">if</span> object.script
+      object.__proto__ = proto
+      code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
+      exec code, object,
+        editor: self
 
     <span class="comment"># TODO: Observable bindings for content and attributes</span>
     <span class="comment"># TODO: Refresh element if type changes?</span>
+    <span class="comment"># TODO: Templates?</span>
     element = document.createElement object.type ? <span class="string">"div"</span>
     element.textContent = object.text
+    element.src = object.src
 
     element.$object = object
 
@@ -187,11 +192,6 @@ shadowed accidentally.</p>
 
     newCard: (data={}) -&gt;
       deck.cards.push Card data
-
-    render: -&gt;
-      <span class="comment"># Render each object's DOM node into the DOM</span>
-      root.objects.forEach (object) -&gt;
-        container.appendChild hydrate object
 
     container: container
 
