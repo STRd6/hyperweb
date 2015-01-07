@@ -49,7 +49,15 @@ newCardButton =
   text: <span class="string">"New Card"</span>
   script: <span class="string">"""
     @click -&gt;
-      deck.cards.push Card()
+      editor.newCard()
+  """</span>
+
+newImageButton =
+  type: <span class="string">"button"</span>
+  text: <span class="string">"New Image"</span>
+  script: <span class="string">"""
+    @click -&gt;
+
   """</span>
 
 testButton =
@@ -65,10 +73,12 @@ nextCardButton =
   text: <span class="string">"Next"</span>
   script: <span class="string">"""
     @click -&gt;
-      nextCard()
+      editor.nextCard()
   """</span>
 
-controlButtons = [newCardButton, testButton, nextCardButton]</code></pre>
+controlButtons = [newCardButton, testButton, nextCardButton]
+
+{exec} = require <span class="string">"./util"</span></code></pre>
 </div>
         </li>
         
@@ -80,17 +90,14 @@ controlButtons = [newCardButton, testButton, nextCardButton]</code></pre>
               </div>
               <p>A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.</p>
-<p>The viewer interprets the data of the card object and presents in the HTML DOM.</p>
+<p>The editor/viewer interprets the data of the card object and presents in the HTML DOM.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Viewer</span></span> = (deck) -&gt;
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Editor</span></span> = (deck) -&gt;
   currentCardIndex = <span class="number">0</span>
   currentCard = deck.cards[currentCardIndex]
 
   container = document.createElement(<span class="string">"div"</span>)
-  controls = document.createElement(<span class="string">"controls"</span>)
-  container.appendChild controls
-
   container.addEventListener <span class="string">"click"</span>, (e) -&gt;
     <span class="comment"># TODO: May need to handle bubbling</span>
     <span class="keyword">if</span> object = e.target.$object
@@ -153,7 +160,8 @@ shadowed accidentally.</p>
             <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
     object.__proto__ = proto
     code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
-    Function(code).call(object)
+    exec code, object,
+      editor: self
 
     <span class="comment"># TODO: Observable bindings for content and attributes</span>
     <span class="comment"># TODO: Refresh element if type changes?</span>
@@ -164,36 +172,39 @@ shadowed accidentally.</p>
 
     object.$element = element
 
-  controlButtons.forEach (button) -&gt;
-    controls.appendChild hydrate button
-
-  objectAdded: (object) -&gt;
+  <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
     container.appendChild hydrate object
 
-  objectRemoved: (object) -&gt;
-    container.removeChild object.$element
+  self =
+    addObject: addObject
 
-  nextCard: -&gt;
-    currentCardIndex += <span class="number">1</span>
-    currentCard = deck.cards[currentCardIndex]
+    objectRemoved: (object) -&gt;
+      container.removeChild object.$element
 
-  render: -&gt;
-    <span class="comment"># Render each object's DOM node into the DOM</span>
-    root.objects.forEach (object) -&gt;
-      container.appendChild hydrate object
+    nextCard: -&gt;
+      currentCardIndex += <span class="number">1</span>
+      currentCard = deck.cards[currentCardIndex]
 
-  container: container
+    newCard: (data={}) -&gt;
+      deck.cards.push Card data
 
-viewer = Viewer(deck)
+    render: -&gt;
+      <span class="comment"># Render each object's DOM node into the DOM</span>
+      root.objects.forEach (object) -&gt;
+        container.appendChild hydrate object
 
-<span class="comment"># TODO: What to do about all these globals?</span>
-global.Card = Card
+    container: container
+
+  controlButtons.forEach addObject
+
+  <span class="keyword">return</span> self
+
+editor = Editor(deck)
+
 global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
   alert text
-global.deck = deck
-global.nextCard = viewer.nextCard
 
-document.body.appendChild viewer.container</code></pre>
+document.body.appendChild editor.container</code></pre>
 </div>
         </li>
         
