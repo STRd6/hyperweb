@@ -32,7 +32,8 @@ It's probably not the worst but it could be better.
 Keep a list of all event handlers registered from the scripts of objects so
 that when events occur we can call the methods that were registered.
 
-      handlers = []
+      handlers =
+        click: new Map
 
 This `proto` holds all the methods that are available on objects in the deck.
 
@@ -43,16 +44,26 @@ Look into using {SUPER: SYSTEM}
 
       proto =
         click: (fn) ->
-          handlers.push [this, "click", fn]
+          if fns = handlers["click"].get(this)
+            fns.push fn
+          else
+            handlers["click"].set this, [fn]
 
         trigger: (method, args...) ->
-          self = this
-          handlers.forEach ([host, type, fn]) ->
-            if host is self and type is method
+          if fns = handlers[method].get(this)
+            host = this
+            fns.forEach (fn) ->
               fn.apply(host, args)
 
+      elementMap = new Map
+      Object.defineProperty proto, "element",
+        get: ->
+          elementMap.get(this)
+        set: (element) ->
+          elementMap.set(this, element)
+
       hydrate = (object) ->
-        return object.$element if object.$element
+        return object.element if object.element
 
 Here we initialize the object
 
@@ -75,7 +86,7 @@ Here we initialize the object
 
         element.$object = object
 
-        object.$element = element
+        object.element = element
 
       addObject = (object) ->
         container.appendChild hydrate object
@@ -88,9 +99,12 @@ Here we initialize the object
           remove deck.objects, object
           
           # remove object element from DOM
-          container.removeChild object.$element
+          container.removeChild object.element
 
         container: container
+
+        data: ->
+          deck
 
       deck.objects.forEach addObject
 
