@@ -89,6 +89,10 @@ Here we initialize the object
         object.element = element
 
       addObject = (object) ->
+        # Add to objects list
+        deck.objects.push object
+
+        # Add to DOM
         container.appendChild hydrate object
 
       self =
@@ -106,7 +110,10 @@ Here we initialize the object
         data: ->
           deck
 
-      deck.objects.forEach addObject
+      # TODO: Seems hacky...
+      objects = deck.objects
+      deck.objects = []
+      objects.forEach addObject
 
       return self
 
