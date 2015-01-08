@@ -152,6 +152,10 @@ shadowed accidentally.</p>
     object.element = element
 
   <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
+    <span class="comment"># Add to objects list</span>
+    deck.objects.push object
+
+    <span class="comment"># Add to DOM</span>
     container.appendChild hydrate object
 
   self =
@@ -169,7 +173,10 @@ shadowed accidentally.</p>
     data: -&gt;
       deck
 
-  deck.objects.forEach addObject
+  <span class="comment"># TODO: Seems hacky...</span>
+  objects = deck.objects
+  deck.objects = []
+  objects.forEach addObject
 
   <span class="keyword">return</span> self
 
