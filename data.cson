@@ -1,11 +1,14 @@
 [{
-  type: "button"
-  text: "New Card"
+  type: "p"
+  text: "Welcome to the world of tomorrow!"
+}, {
+  type: "p"
+  text: "Click me and I'll remove myself!"
   script: """
     @click ->
-      editor.newCard()
+      editor.remove this
   """
-}, {
+} , {
   type: "button"
   text: "New Image"
   script: """
@@ -16,24 +19,17 @@
   """
 }, {
   type: "button"
-  text: "Test"
+  text: "Greet"
   script: """
     @click ->
       say "Hello"
-  """
-}, {
-  type: "button"
-  text: "Next"
-  script: """
-    @click ->
-      editor.nextCard()
   """
 }, {
   type: "form"
   template: """
     %form(@submit)
       %textarea(@value)
-      %button Submit
+      %button Create Object
   """
   script: """
     @value = Observable JSON.stringify(this, null, 2)

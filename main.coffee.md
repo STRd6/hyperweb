@@ -6,16 +6,13 @@ Exploring the magic of HyperCard.
 We'll need to be able to create a new card, add buttons, scripts, interactions.
 
     deck =
-      cards: [
-        objects: []
-      ]
+      objects: require "./data"
 
-    Card = ->
-      objects: []
+    {compileTemplate, exec, remove} = require "./util"
 
-    controlButtons = require "./data"
-
-    {compileTemplate, exec} = require "./util"
+    styleElement = document.createElement "style"
+    styleElement.innerHTML = require "./style"
+    document.head.appendChild styleElement
 
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
@@ -23,9 +20,6 @@ properties or sub-components.
 The editor/viewer interprets the data of the card object and presents in the HTML DOM.
 
     Editor = (deck) ->
-      currentCardIndex = 0
-      currentCard = deck.cards[currentCardIndex]
-
       container = document.createElement("div")
       container.addEventListener "click", (e) ->
         # TODO: May need to handle bubbling
@@ -63,8 +57,8 @@ Look into using {SUPER: SYSTEM}
 Here we initialize the object
 
         # Init Code from Script
+        object.__proto__ = proto
         if object.script
-          object.__proto__ = proto
           code = CoffeeScript.compile(object.script, bare: true)
           exec code, object,
             editor: self
@@ -89,19 +83,16 @@ Here we initialize the object
       self =
         addObject: addObject
 
-        objectRemoved: (object) ->
+        remove: (object) ->
+          # Remove object from list
+          remove deck.objects, object
+          
+          # remove object element from DOM
           container.removeChild object.$element
-
-        nextCard: ->
-          currentCardIndex += 1
-          currentCard = deck.cards[currentCardIndex]
-
-        newCard: (data={}) ->
-          deck.cards.push Card data
 
         container: container
 
-      controlButtons.forEach addObject
+      deck.objects.forEach addObject
 
       return self
 

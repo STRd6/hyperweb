@@ -19,3 +19,7 @@ Util
           runtime: "Hamlet"
 
         Function("Hamlet", "return " + code)(Hamlet)
+
+      remove: (array, object) ->
+        if (index = array.indexOf(object) >= 0)
+          array.splice(index, 1)
