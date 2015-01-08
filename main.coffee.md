@@ -13,43 +13,9 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
     Card = ->
       objects: []
 
-    newCardButton =
-      type: "button"
-      text: "New Card"
-      script: """
-        @click ->
-          editor.newCard()
-      """
+    controlButtons = require "./data"
 
-    newImageButton =
-      type: "button"
-      text: "New Image"
-      script: """
-        @click ->
-          editor.addObject
-            type: "img"
-            src: "https://trello-attachments.s3.amazonaws.com/54a60b08f586e1cafdef3113/350x247/b4e92ef573aa2723d6b16330fa53548d/HyperCardbird-e1338220256722.jpg"
-      """
-
-    testButton =
-      type: "button"
-      text: "Test"
-      script: """
-        @click ->
-          say "Hello"
-      """
-
-    nextCardButton =
-      type: "button"
-      text: "Next"
-      script: """
-        @click ->
-          editor.nextCard()
-      """
-
-    controlButtons = [newCardButton, testButton, nextCardButton, newImageButton]
-
-    {exec} = require "./util"
+    {compileTemplate, exec} = require "./util"
 
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
@@ -106,9 +72,12 @@ Here we initialize the object
         # TODO: Observable bindings for content and attributes
         # TODO: Refresh element if type changes?
         # TODO: Templates?
-        element = document.createElement object.type ? "div"
-        element.textContent = object.text
-        element.src = object.src
+        if object.template
+          element = compileTemplate(object.template)(object)
+        else
+          element = document.createElement object.type ? "div"
+          element.textContent = object.text
+          element.src = object.src
 
         element.$object = object
 
@@ -133,7 +102,7 @@ Here we initialize the object
         container: container
 
       controlButtons.forEach addObject
-      
+
       return self
 
     editor = Editor(deck)

@@ -1,0 +1,46 @@
+[{
+  type: "button"
+  text: "New Card"
+  script: """
+    @click ->
+      editor.newCard()
+  """
+}, {
+  type: "button"
+  text: "New Image"
+  script: """
+    @click ->
+      editor.addObject
+        type: "img"
+        src: "https://trello-attachments.s3.amazonaws.com/54a60b08f586e1cafdef3113/350x247/b4e92ef573aa2723d6b16330fa53548d/HyperCardbird-e1338220256722.jpg"
+  """
+}, {
+  type: "button"
+  text: "Test"
+  script: """
+    @click ->
+      say "Hello"
+  """
+}, {
+  type: "button"
+  text: "Next"
+  script: """
+    @click ->
+      editor.nextCard()
+  """
+}, {
+  type: "form"
+  template: """
+    %form(@submit)
+      %textarea(@value)
+      %button Submit
+  """
+  script: """
+    @value = Observable JSON.stringify(this, null, 2)
+
+    @submit = (event) ->
+      event.preventDefault()
+
+      editor.addObject CSON.parse @value()
+  """
+}]
