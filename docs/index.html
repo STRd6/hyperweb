@@ -79,7 +79,8 @@ It&#39;s probably not the worst but it could be better.</p>
 that when events occur we can call the methods that were registered.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  handlers = []</code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">  handlers =
+    click: <span class="keyword">new</span> Map</code></pre>
 </div>
         </li>
         
@@ -97,16 +98,26 @@ shadowed accidentally.</p>
             </div>
             <div class="content"><pre><code class="lang-coffeescript">  proto =
     click: (fn) -&gt;
-      handlers.push [<span class="keyword">this</span>, <span class="string">"click"</span>, fn]
+      <span class="keyword">if</span> fns = handlers[<span class="string">"click"</span>].get(<span class="keyword">this</span>)
+        fns.push fn
+      <span class="keyword">else</span>
+        handlers[<span class="string">"click"</span>].set <span class="keyword">this</span>, [fn]
 
     trigger: (method, args...) -&gt;
-      self = <span class="keyword">this</span>
-      handlers.forEach ([host, type, fn]) -&gt;
-        <span class="keyword">if</span> host <span class="keyword">is</span> self <span class="keyword">and</span> type <span class="keyword">is</span> method
+      <span class="keyword">if</span> fns = handlers[method].get(<span class="keyword">this</span>)
+        host = <span class="keyword">this</span>
+        fns.forEach (fn) -&gt;
           fn.apply(host, args)
 
+  elementMap = <span class="keyword">new</span> Map
+  Object.defineProperty proto, <span class="string">"element"</span>,
+    get: -&gt;
+      elementMap.get(<span class="keyword">this</span>)
+    set: (element) -&gt;
+      elementMap.set(<span class="keyword">this</span>, element)
+
   <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
-    <span class="keyword">return</span> object.$element <span class="keyword">if</span> object.$element</code></pre>
+    <span class="keyword">return</span> object.element <span class="keyword">if</span> object.element</code></pre>
 </div>
         </li>
         
@@ -138,7 +149,7 @@ shadowed accidentally.</p>
 
     element.$object = object
 
-    object.$element = element
+    object.element = element
 
   <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
     container.appendChild hydrate object
@@ -151,9 +162,12 @@ shadowed accidentally.</p>
       remove deck.objects, object
 
       <span class="comment"># remove object element from DOM</span>
-      container.removeChild object.$element
+      container.removeChild object.element
 
     container: container
+
+    data: -&gt;
+      deck
 
   deck.objects.forEach addObject
 
