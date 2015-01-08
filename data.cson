@@ -2,13 +2,6 @@
   type: "p"
   text: "Welcome to the world of tomorrow!"
 }, {
-  type: "p"
-  text: "Click me and I'll remove myself!"
-  script: """
-    @click ->
-      editor.remove this
-  """
-} , {
   type: "button"
   text: "New Image"
   script: """
@@ -32,7 +25,11 @@
       %button Create Object
   """
   script: """
-    @value = Observable JSON.stringify(this, null, 2)
+    @value = Observable \"""
+      type: "p"
+      text: "Click me and I'll remove myself!"
+      script: "@click -> editor.remove this"
+    \"""
 
     @submit = (event) ->
       event.preventDefault()
