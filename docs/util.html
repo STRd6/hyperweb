@@ -51,7 +51,11 @@ module.exports =
       compiler: CoffeeScript
       runtime: <span class="string">"Hamlet"</span>
 
-    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)</code></pre>
+    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)
+
+  remove: (array, object) -&gt;
+    <span class="keyword">if</span> (index = array.indexOf(object) &gt;= <span class="number">0</span>)
+      array.splice(index, <span class="number">1</span>)</code></pre>
 </div>
         </li>
         

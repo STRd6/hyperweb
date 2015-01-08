@@ -37,16 +37,13 @@
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">deck =
-  cards: [
-    objects: []
-  ]
+  objects: require <span class="string">"./data"</span>
 
-<span class="function"><span class="title">Card</span></span> = -&gt;
-  objects: []
+{compileTemplate, exec, remove} = require <span class="string">"./util"</span>
 
-controlButtons = require <span class="string">"./data"</span>
-
-{compileTemplate, exec} = require <span class="string">"./util"</span></code></pre>
+styleElement = document.createElement <span class="string">"style"</span>
+styleElement.innerHTML = require <span class="string">"./style"</span>
+document.head.appendChild styleElement</code></pre>
 </div>
         </li>
         
@@ -62,9 +59,6 @@ properties or sub-components.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Editor</span></span> = (deck) -&gt;
-  currentCardIndex = <span class="number">0</span>
-  currentCard = deck.cards[currentCardIndex]
-
   container = document.createElement(<span class="string">"div"</span>)
   container.addEventListener <span class="string">"click"</span>, (e) -&gt;
     <span class="comment"># TODO: May need to handle bubbling</span>
@@ -126,8 +120,8 @@ shadowed accidentally.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
+    object.__proto__ = proto
     <span class="keyword">if</span> object.script
-      object.__proto__ = proto
       code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
       exec code, object,
         editor: self
@@ -152,19 +146,16 @@ shadowed accidentally.</p>
   self =
     addObject: addObject
 
-    objectRemoved: (object) -&gt;
+    remove: (object) -&gt;
+      <span class="comment"># Remove object from list</span>
+      remove deck.objects, object
+
+      <span class="comment"># remove object element from DOM</span>
       container.removeChild object.$element
-
-    nextCard: -&gt;
-      currentCardIndex += <span class="number">1</span>
-      currentCard = deck.cards[currentCardIndex]
-
-    newCard: (data={}) -&gt;
-      deck.cards.push Card data
 
     container: container
 
-  controlButtons.forEach addObject
+  deck.objects.forEach addObject
 
   <span class="keyword">return</span> self
 
