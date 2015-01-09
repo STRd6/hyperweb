@@ -19,6 +19,7 @@ properties or sub-components.
 
 The editor/viewer interprets the data of the card object and presents in the HTML DOM.
 
+
     Editor = (deck) ->
       container = document.createElement("div")
       container.addEventListener "click", (e) ->
@@ -26,8 +27,8 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         # `interact` tool
         e.preventDefault() if false
         
-        if object = e.target.$object
-          object.trigger("click", e)
+        # Proxy events to tool
+        self.tool().click(e)
       , true
 
 We're currently doing a jQuery-esque thing for tracking events bound to objects.
@@ -111,6 +112,9 @@ Here we initialize the object
 
         container: container
 
+        tool: ->
+          interactTool
+
         data: ->
           deck
 
@@ -127,6 +131,13 @@ Here we initialize the object
       alert text
 
     document.body.appendChild editor.container
+
+Eventually these tools will be plentiful and user defined.
+
+    interactTool =
+      click: (e) ->
+        if object = e.target.$object
+          object.trigger("click", e)
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.
