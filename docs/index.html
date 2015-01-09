@@ -61,9 +61,13 @@ properties or sub-components.</p>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Editor</span></span> = (deck) -&gt;
   container = document.createElement(<span class="string">"div"</span>)
   container.addEventListener <span class="string">"click"</span>, (e) -&gt;
-    <span class="comment"># TODO: May need to handle bubbling</span>
+    <span class="comment"># TODO: Prevent default if we are using a tool other than the </span>
+    <span class="comment"># `interact` tool</span>
+    e.preventDefault() <span class="keyword">if</span> <span class="literal">false</span>
+
     <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)</code></pre>
+      object.trigger(<span class="string">"click"</span>, e)
+  , <span class="literal">true</span></code></pre>
 </div>
         </li>
         
@@ -197,7 +201,7 @@ document.body.appendChild editor.container</code></pre>
               </div>
               <p>An editor is built into the default viewer for modifying the data of a card on
 the fly.</p>
-<h2 id="features">Features</h2>
+<h1 id="features">Features</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -211,14 +215,72 @@ the fly.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Adding objects, moving them around.</p>
+              <h2 id="tools">Tools</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Adding objects, moving them around</p>
 <p>Executing click handlers (play sound, go to card, etc.)</p>
-<p>Deleting objects.</p>
-<p>Copying objects.</p>
-<p>Input fields.</p>
-<p>Binding inputs to properties.</p>
-<p>Navigation (Next card, previous card, go to #, go to name)</p>
-<p>Self hosting of editor</p>
+<p>Inspect objects without triggering clicks</p>
+<p>Deleting objects</p>
+<p>Copying objects</p>
+<p>Input fields</p>
+<p>Composing Objects</p>
+<h2 id="binding-inputs-outputs-to-properties">Binding inputs/outputs to properties</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>An object count that stays up to date</p>
+<h2 id="navigation">Navigation</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Next card, previous card, go to #, go to name</p>
+<h2 id="self-hosting-of-editor">Self hosting of editor</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Inception</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
