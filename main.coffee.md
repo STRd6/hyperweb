@@ -22,9 +22,13 @@ The editor/viewer interprets the data of the card object and presents in the HTM
     Editor = (deck) ->
       container = document.createElement("div")
       container.addEventListener "click", (e) ->
-        # TODO: May need to handle bubbling
+        # TODO: Prevent default if we are using a tool other than the 
+        # `interact` tool
+        e.preventDefault() if false
+        
         if object = e.target.$object
           object.trigger("click", e)
+      , true
 
 We're currently doing a jQuery-esque thing for tracking events bound to objects.
 It's probably not the worst but it could be better.
@@ -128,20 +132,35 @@ An editor is built into the default viewer for modifying the data of a card on
 the fly.
 
 Features
---------
+========
 
-Adding objects, moving them around.
+Tools
+-----
+
+Adding objects, moving them around
 
 Executing click handlers (play sound, go to card, etc.)
 
-Deleting objects.
+Inspect objects without triggering clicks
 
-Copying objects.
+Deleting objects
 
-Input fields.
+Copying objects
 
-Binding inputs to properties.
+Input fields
 
-Navigation (Next card, previous card, go to #, go to name)
+Composing Objects
+
+Binding inputs/outputs to properties
+----------------------------
+An object count that stays up to date
+
+Navigation
+----------
+
+Next card, previous card, go to #, go to name
 
 Self hosting of editor
+----------------------
+
+Inception
