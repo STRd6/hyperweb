@@ -53,21 +53,13 @@ document.head.appendChild styleElement</code></pre>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>A card is simply a JSON object. A card can therefore contain any number of
-properties or sub-components.</p>
-<p>The editor/viewer interprets the data of the card object and presents in the HTML DOM.</p>
+              <p>Eventually these tools will be plentiful and user defined.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">Editor</span></span> = (deck) -&gt;
-  container = document.createElement(<span class="string">"div"</span>)
-  container.addEventListener <span class="string">"click"</span>, (e) -&gt;
-    <span class="comment"># TODO: Prevent default if we are using a tool other than the </span>
-    <span class="comment"># `interact` tool</span>
-    e.preventDefault() <span class="keyword">if</span> <span class="literal">false</span>
-
-    <span class="comment"># Proxy events to tool</span>
-    self.tool().click(e)
-  , <span class="literal">true</span></code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">interactTool =
+  click: (e) -&gt;
+    <span class="keyword">if</span> object = e.target.$object
+      object.trigger(<span class="string">"click"</span>, e)</code></pre>
 </div>
         </li>
         
@@ -77,14 +69,19 @@ properties or sub-components.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>We&#39;re currently doing a jQuery-esque thing for tracking events bound to objects.
-It&#39;s probably not the worst but it could be better.</p>
-<p>Keep a list of all event handlers registered from the scripts of objects so
-that when events occur we can call the methods that were registered.</p>
+              <p>A card is simply a JSON object. A card can therefore contain any number of
+properties or sub-components.</p>
+<p>The editor/viewer interprets the data of the card object and presents in the HTML DOM.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  handlers =
-    click: <span class="keyword">new</span> Map</code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">BASE = require <span class="string">"./base_object"</span>
+
+<span class="function"><span class="title">Editor</span></span> = (I={}, self=Model(I)) -&gt;
+  container = document.createElement(<span class="string">"div"</span>)
+  container.addEventListener <span class="string">"click"</span>, (e) -&gt;
+    <span class="comment"># Proxy events to tool</span>
+    self.tool().click(e)
+  , <span class="literal">true</span></code></pre>
 </div>
         </li>
         
@@ -94,48 +91,10 @@ that when events occur we can call the methods that were registered.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>This <code>proto</code> holds all the methods that are available on objects in the deck.</p>
-<p>Advantages are that it is lightweight, disadvantages are that it can easily be
-shadowed accidentally.</p>
-<p>Look into using {SUPER: SYSTEM}</p>
+              <p>All this init/hydrate stuff is pretty nasty...</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  proto =
-    click: (fn) -&gt;
-      <span class="keyword">if</span> fns = handlers[<span class="string">"click"</span>].get(<span class="keyword">this</span>)
-        fns.push fn
-      <span class="keyword">else</span>
-        handlers[<span class="string">"click"</span>].set <span class="keyword">this</span>, [fn]
-
-    trigger: (method, args...) -&gt;
-      <span class="keyword">if</span> fns = handlers[method].get(<span class="keyword">this</span>)
-        host = <span class="keyword">this</span>
-        fns.forEach (fn) -&gt;
-          fn.apply(host, args)
-
-  elementMap = <span class="keyword">new</span> Map
-  Object.defineProperty proto, <span class="string">"element"</span>,
-    get: -&gt;
-      elementMap.get(<span class="keyword">this</span>)
-    set: (element) -&gt;
-      elementMap.set(<span class="keyword">this</span>, element)
-
-  <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
-    <span class="keyword">return</span> object.element <span class="keyword">if</span> object.element</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>Here we initialize the object</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">    <span class="comment"># Init Code from Script</span>
-    object.__proto__ = proto
+            <div class="content"><pre><code class="lang-coffeescript">  <span class="function"><span class="title">initObject</span></span> = (object) -&gt;
     <span class="keyword">if</span> object.script
       code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
       exec code, object,
@@ -143,7 +102,6 @@ shadowed accidentally.</p>
 
     <span class="comment"># TODO: Observable bindings for content and attributes</span>
     <span class="comment"># TODO: Refresh element if type changes?</span>
-    <span class="comment"># TODO: Templates?</span>
     <span class="keyword">if</span> object.template
       element = compileTemplate(object.template)(object)
     <span class="keyword">else</span>
@@ -155,35 +113,42 @@ shadowed accidentally.</p>
 
     object.element = element
 
-  <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
-    <span class="comment"># Add to objects list</span>
-    deck.objects.push object
-
     <span class="comment"># Add to DOM</span>
-    container.appendChild hydrate object
+    container.appendChild object.element
 
-  self =
+  <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
+    object.__proto__ = BASE
+
+    object
+
+  <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
+    hydrate object
+
+    <span class="comment"># Add to objects list</span>
+    self.objects.push object
+
+    initObject(object)
+
+  self.extend
     addObject: addObject
 
     remove: (object) -&gt;
       <span class="comment"># Remove object from list</span>
-      remove deck.objects, object
+      self.objects.remove(object)
 
       <span class="comment"># remove object element from DOM</span>
       container.removeChild object.element
 
     container: container
 
-    tool: -&gt;
-      interactTool
+    tool: Observable interactTool
 
-    data: -&gt;
-      deck
+    toJSON: -&gt;
+      I
 
-  <span class="comment"># TODO: Seems hacky...</span>
-  objects = deck.objects
-  deck.objects = []
-  objects.forEach addObject
+  <span class="comment"># TODO: Clean up this hydrate stuff into a plain constructor function</span>
+  self.attrModels <span class="string">"objects"</span>, hydrate
+  self.objects.forEach initObject
 
   <span class="keyword">return</span> self
 
@@ -197,26 +162,10 @@ document.body.appendChild editor.container</code></pre>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>Eventually these tools will be plentiful and user defined.</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">interactTool =
-  click: (e) -&gt;
-    <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-8">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>An editor is built into the default viewer for modifying the data of a card on
 the fly.</p>
@@ -229,10 +178,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-7">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <h2 id="tools">Tools</h2>
 
@@ -243,12 +192,12 @@ the fly.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-8">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Adding objects, moving them around</p>
+              <p>Adding objects, moving them around, matrix transforms</p>
 <p>Executing click handlers (play sound, go to card, etc.)</p>
 <p>Inspect objects without triggering clicks</p>
 <p>Deleting objects</p>
@@ -264,10 +213,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-9">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>An object count that stays up to date</p>
 <h2 id="navigation">Navigation</h2>
@@ -279,12 +228,14 @@ the fly.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-10">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Next card, previous card, go to #, go to name</p>
+<p>Save and restore state</p>
+<p>Save objects in a library for later use</p>
 <h2 id="self-hosting-of-editor">Self hosting of editor</h2>
 
             </div>
@@ -294,10 +245,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-11">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Inception</p>
 
