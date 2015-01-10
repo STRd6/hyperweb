@@ -36,4 +36,14 @@
 
       editor.addObject CSON.parse @value()
   """
+}, {
+  template: """
+    %p
+      Object Count:
+      %span= @count
+  """
+  script: """
+    @count = Observable ->
+      editor.objects.size()
+  """
 }]

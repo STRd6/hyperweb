@@ -1,8 +1,10 @@
 Util
 ====
 
+    # TODO: To global or not to global ...
     global.CSON = require "cson"
     global.Hamlet = require "hamlet"
+    global.Model = require "model"
     global.Observable = require "observable"
 
     module.exports =
