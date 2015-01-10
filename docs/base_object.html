@@ -32,6 +32,18 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
+              
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">{compileTemplate} = require <span class="string">"./util"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
               <p>The prototype for all the objects.</p>
 <p>We&#39;re currently doing a jQuery-esque thing for tracking events bound to objects.
 It&#39;s probably not the worst but it could be better.</p>
@@ -44,10 +56,10 @@ that when events occur we can call the methods that were registered.</p>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>This <code>proto</code> holds all the methods that are available on objects in the deck.</p>
 <p>Advantages are that it is lightweight, disadvantages are that it can easily be
@@ -56,6 +68,14 @@ shadowed accidentally.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">proto =
+  copy: -&gt;
+    <span class="comment"># TODO: may need to formalize calling constructor on resulting data</span>
+    <span class="comment"># instead of relying on someone else to call it</span>
+
+    <span class="comment"># TODO: There's probably room for efficiency improvements, but not for</span>
+    <span class="comment"># simplicity improvements</span>
+    JSON.parse(JSON.stringify(<span class="keyword">this</span>))
+
   trigger: (method, args...) -&gt;
     <span class="keyword">if</span> fns = handlers[method].get(<span class="keyword">this</span>)
       host = <span class="keyword">this</span>
@@ -74,7 +94,20 @@ shadowed accidentally.</p>
 elementMap = <span class="keyword">new</span> Map
 Object.defineProperty proto, <span class="string">"element"</span>,
   get: -&gt;
-    elementMap.get(<span class="keyword">this</span>)
+    <span class="keyword">if</span> element = elementMap.get(<span class="keyword">this</span>)
+      <span class="keyword">return</span> element
+
+    <span class="keyword">if</span> <span class="property">@template</span>
+      element = compileTemplate(<span class="property">@template</span>)(<span class="keyword">this</span>)
+    <span class="keyword">else</span>
+      <span class="comment"># TODO: Default to enabling observables?</span>
+      element = document.createElement <span class="property">@type</span> ? <span class="string">"div"</span>
+      element.textContent = <span class="property">@text</span>
+      element.src = <span class="property">@src</span>
+
+    element.$object = <span class="keyword">this</span>
+
+    <span class="property">@element</span> = element
   set: (element) -&gt;
     elementMap.set(<span class="keyword">this</span>, element)
 

@@ -35,10 +35,33 @@
               
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="comment"># TODO: To global or not to global ...</span>
+global.global = global
 global.CSON = require <span class="string">"cson"</span>
 global.Hamlet = require <span class="string">"hamlet"</span>
-global.Model = require <span class="string">"model"</span>
 global.Observable = require <span class="string">"observable"</span>
+global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
+  alert text
+
+global.Model = <span class="keyword">do</span> -&gt;
+  oldModel = require <span class="string">"model"</span>
+
+  (I, self) -&gt;
+    self = oldModel(I, self)
+
+    self.extend
+      attrData: (name, DataModel) -&gt;
+        <span class="function"><span class="title">models</span></span> = (I[name] <span class="keyword">or</span> []).map (x) -&gt;
+          DataModel(x)
+
+        self[name] = Observable(models)
+
+        self[name].observe (newValue) -&gt;
+          I[name] = newValue.map (x) -&gt;
+            DataModel(x)
+
+        <span class="keyword">return</span> self
+
+    <span class="keyword">return</span> self
 
 module.exports =
   exec: (code, context, params={}) -&gt;
@@ -53,11 +76,7 @@ module.exports =
       compiler: CoffeeScript
       runtime: <span class="string">"Hamlet"</span>
 
-    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)
-
-  remove: (array, object) -&gt;
-    <span class="keyword">if</span> (index = array.indexOf(object) &gt;= <span class="number">0</span>)
-      array.splice(index, <span class="number">1</span>)</code></pre>
+    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)</code></pre>
 </div>
         </li>
         
