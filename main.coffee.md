@@ -8,7 +8,7 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
     deck =
       objects: require "./data"
 
-    {compileTemplate, exec, remove} = require "./util"
+    {exec} = require "./util"
 
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
@@ -20,6 +20,13 @@ Eventually these tools will be plentiful and user defined.
       click: (e) ->
         if object = e.target.$object
           object.trigger("click", e)
+
+    cloneTool =
+      click: (e) ->
+        e.preventDefault()
+
+        if object = e.target.$object
+          editor.addObject object.copy()
 
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
@@ -42,19 +49,6 @@ All this init/hydrate stuff is pretty nasty...
           code = CoffeeScript.compile(object.script, bare: true)
           exec code, object,
             editor: self
-
-        # TODO: Observable bindings for content and attributes
-        # TODO: Refresh element if type changes?
-        if object.template
-          element = compileTemplate(object.template)(object)
-        else
-          element = document.createElement object.type ? "div"
-          element.textContent = object.text
-          element.src = object.src
-
-        element.$object = object
-
-        object.element = element
 
         # Add to DOM
         container.appendChild object.element
@@ -90,15 +84,12 @@ All this init/hydrate stuff is pretty nasty...
           I
 
       # TODO: Clean up this hydrate stuff into a plain constructor function
-      self.attrModels "objects", hydrate
+      self.attrData "objects", hydrate
       self.objects.forEach initObject
 
       return self
 
     editor = Editor(deck)
-
-    global.say = (text) ->
-      alert text
 
     document.body.appendChild editor.container
 
@@ -115,6 +106,8 @@ Adding objects, moving them around, matrix transforms
 
 Executing click handlers (play sound, go to card, etc.)
 
+Drawing tools
+
 Inspect objects without triggering clicks
 
 Deleting objects
@@ -127,6 +120,7 @@ Composing Objects
 
 Binding inputs/outputs to properties
 ----------------------------
+
 An object count that stays up to date
 
 Navigation
@@ -142,3 +136,14 @@ Self hosting of editor
 ----------------------
 
 Inception
+
+Documentation
+-------------
+
+API Docs
+
+Examples
+
+Tutorials
+
+Interactive Demos

@@ -1,6 +1,8 @@
 Base Object
 ===========
 
+    {compileTemplate} = require "./util"
+
 The prototype for all the objects.
 
 We're currently doing a jQuery-esque thing for tracking events bound to objects.
@@ -19,6 +21,14 @@ shadowed accidentally.
 Look into using {SUPER: SYSTEM}
 
     proto =
+      copy: ->
+        # TODO: may need to formalize calling constructor on resulting data
+        # instead of relying on someone else to call it
+
+        # TODO: There's probably room for efficiency improvements, but not for
+        # simplicity improvements
+        JSON.parse(JSON.stringify(this))
+
       trigger: (method, args...) ->
         if fns = handlers[method].get(this)
           host = this
@@ -37,7 +47,20 @@ Look into using {SUPER: SYSTEM}
     elementMap = new Map
     Object.defineProperty proto, "element",
       get: ->
-        elementMap.get(this)
+        if element = elementMap.get(this)
+          return element
+
+        if @template
+          element = compileTemplate(@template)(this)
+        else
+          # TODO: Default to enabling observables?
+          element = document.createElement @type ? "div"
+          element.textContent = @text
+          element.src = @src
+
+        element.$object = this
+
+        @element = element
       set: (element) ->
         elementMap.set(this, element)
 

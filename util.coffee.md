@@ -2,10 +2,33 @@ Util
 ====
 
     # TODO: To global or not to global ...
+    global.global = global
     global.CSON = require "cson"
     global.Hamlet = require "hamlet"
-    global.Model = require "model"
     global.Observable = require "observable"
+    global.say = (text) ->
+      alert text
+
+    global.Model = do ->
+      oldModel = require "model"
+
+      (I, self) ->
+        self = oldModel(I, self)
+
+        self.extend
+          attrData: (name, DataModel) ->
+            models = (I[name] or []).map (x) ->
+              DataModel(x)
+
+            self[name] = Observable(models)
+  
+            self[name].observe (newValue) ->
+              I[name] = newValue.map (x) ->
+                DataModel(x)
+
+            return self
+
+        return self
 
     module.exports =
       exec: (code, context, params={}) ->
@@ -21,7 +44,3 @@ Util
           runtime: "Hamlet"
 
         Function("Hamlet", "return " + code)(Hamlet)
-
-      remove: (array, object) ->
-        if (index = array.indexOf(object) >= 0)
-          array.splice(index, 1)
