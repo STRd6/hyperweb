@@ -68,6 +68,8 @@ shadowed accidentally.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">proto =
+  <span class="comment"># TODO: This is really more of a 'toJSON' but if named that it will</span>
+  <span class="comment"># infinitely recurse</span>
   copy: -&gt;
     <span class="comment"># TODO: may need to formalize calling constructor on resulting data</span>
     <span class="comment"># instead of relying on someone else to call it</span>
