@@ -6,6 +6,7 @@ Exploring the magic of HyperCard.
 We'll need to be able to create a new card, add buttons, scripts, interactions.
 
     deck =
+      controls: require "./controls"
       objects: require "./data"
 
     {exec} = require "./util"
@@ -21,13 +22,6 @@ Eventually these tools will be plentiful and user defined.
         if object = e.target.$object
           object.trigger("click", e)
 
-    cloneTool =
-      click: (e) ->
-        e.preventDefault()
-
-        if object = e.target.$object
-          editor.addObject object.copy()
-
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
 
@@ -36,11 +30,18 @@ The editor/viewer interprets the data of the card object and presents in the HTM
     BASE = require "./base_object"
 
     Editor = (I={}, self=Model(I)) ->
+      element = document.createElement("div")
+      controls = document.createElement("div")
+
       container = document.createElement("div")
+      # TODO: Handle all interaction events (touchdown, touchup, etc.)
       container.addEventListener "click", (e) ->
         # Proxy events to tool
         self.tool().click(e)
       , true
+
+      element.appendChild controls
+      element.appendChild container
 
 All this init/hydrate stuff is pretty nasty...
 
@@ -49,9 +50,6 @@ All this init/hydrate stuff is pretty nasty...
           code = CoffeeScript.compile(object.script, bare: true)
           exec code, object,
             editor: self
-
-        # Add to DOM
-        container.appendChild object.element
 
       hydrate = (object) ->
         object.__proto__ = BASE
@@ -65,6 +63,8 @@ All this init/hydrate stuff is pretty nasty...
         self.objects.push object
 
         initObject(object)
+        # Add to DOM
+        container.appendChild object.element
 
       self.extend
         addObject: addObject
@@ -76,7 +76,7 @@ All this init/hydrate stuff is pretty nasty...
           # remove object element from DOM
           container.removeChild object.element
 
-        container: container
+        element: element
 
         tool: Observable interactTool
 
@@ -85,13 +85,18 @@ All this init/hydrate stuff is pretty nasty...
 
       # TODO: Clean up this hydrate stuff into a plain constructor function
       self.attrData "objects", hydrate
-      self.objects.forEach initObject
+      self.objects.forEach (object) ->
+        initObject(object)
+        container.appendChild object.element
+
+      self.attrData "controls", hydrate
+      self.controls.forEach (object) ->
+        initObject(object)
+        controls.appendChild object.element
 
       return self
 
-    editor = Editor(deck)
-
-    document.body.appendChild editor.container
+    document.body.appendChild Editor(deck).element
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.
@@ -117,6 +122,8 @@ Copying objects
 Input fields
 
 Composing Objects
+
+Cursors
 
 Binding inputs/outputs to properties
 ----------------------------

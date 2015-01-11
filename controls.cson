@@ -1,0 +1,54 @@
+# Controls
+# Context scoping is currently kind of a nightmare here
+# The template needs special access to the editor to handle selecting a tool
+# The tool event handler context and arguments need some thought
+
+# Another note, the controls currently are using Hamlet template events
+# rather than a unified event system with the base objects...
+[{
+  template: """
+    .tools
+      - editor = @editor() # TODO: Better context handling of editor?
+      - @tools.each (tool) ->
+        - select = -> editor.tool tool
+        %button(click=select)
+          = tool.text
+  """
+  script: """
+    getObject = (event) ->
+      node = event.target
+
+      while node
+        if object = node.$object
+          return object
+
+        node = node.parent
+
+    @tools = Observable [{
+      text: "Interact"
+      click: (event) ->
+        if object = getObject(event)
+          object.trigger("click", event)
+    }, {
+      text: "Copy"
+      click: (event) ->
+        event.preventDefault()
+
+        if object = getObject(event)
+          editor.addObject object.copy()
+    }, {
+      text: "Delete"
+      click: (event) ->
+        event.preventDefault()
+
+        if object = getObject(event)
+          editor.remove object
+    }]
+
+    @editor = ->
+      editor
+
+    @click = ->
+      editor.tool interact
+  """
+}]
