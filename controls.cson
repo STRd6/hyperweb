@@ -3,8 +3,13 @@
 # The template needs special access to the editor to handle selecting a tool
 # The tool event handler context and arguments need some thought
 
+# Should template context be the same as script context? Probably... the fewer
+# different contexts the better.
+
 # Another note, the controls currently are using Hamlet template events
 # rather than a unified event system with the base objects...
+
+# How should Hamlet/"plain HTML" events be unified with the object event system?
 [{
   template: """
     .tools
