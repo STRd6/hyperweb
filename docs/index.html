@@ -36,7 +36,9 @@
 <p>We&#39;ll need to be able to create a new card, add buttons, scripts, interactions.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">deck =
+            <div class="content"><pre><code class="lang-coffeescript"><span class="string">"use strict"</span>
+
+deck =
   controls: require <span class="string">"./controls"</span>
   objects: require <span class="string">"./data"</span>
 
@@ -57,10 +59,14 @@ document.head.appendChild styleElement</code></pre>
               <p>Eventually these tools will be plentiful and user defined.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">interactTool =
-  click: (e) -&gt;
-    <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)</code></pre>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">getObject</span></span> = (event) -&gt;
+  node = event.target
+
+  <span class="keyword">while</span> node
+    <span class="keyword">if</span> object = node.$object
+      <span class="keyword">return</span> object
+
+    node = node.parentElement</code></pre>
 </div>
         </li>
         
@@ -83,10 +89,15 @@ properties or sub-components.</p>
 
   container = document.createElement(<span class="string">"div"</span>)
   <span class="comment"># TODO: Handle all interaction events (touchdown, touchup, etc.)</span>
-  container.addEventListener <span class="string">"click"</span>, (e) -&gt;
-    <span class="comment"># Proxy events to tool</span>
-    self.tool().click(e)
-  , <span class="literal">true</span>
+  container.addEventListener <span class="string">"click"</span>, (event) -&gt;
+    object = getObject(event)
+    <span class="comment"># Invoke the tool with `object` as the context and additional named arguments</span>
+    self.tool().click.call(object, {
+      editor: self
+      event
+      object
+    })
+  , <span class="literal">true</span> <span class="comment"># Use Capture</span>
 
   element.appendChild controls
   element.appendChild container</code></pre>
@@ -135,7 +146,7 @@ properties or sub-components.</p>
 
     element: element
 
-    tool: Observable interactTool
+    tool: Observable()
 
     toJSON: -&gt;
       I
