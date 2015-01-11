@@ -20,35 +20,29 @@
           = tool.text
   """
   script: """
-    getObject = (event) ->
-      node = event.target
-
-      while node
-        if object = node.$object
-          return object
-
-        node = node.parent
-
     @tools = Observable [{
       text: "Interact"
-      click: (event) ->
-        if object = getObject(event)
-          object.trigger("click", event)
+      click: (params) ->
+        if this
+          @trigger("click", params)
     }, {
       text: "Copy"
-      click: (event) ->
+      click: ({event, object}) ->
+        console.log event
         event.preventDefault()
 
-        if object = getObject(event)
+        if object
           editor.addObject object.copy()
     }, {
       text: "Delete"
-      click: (event) ->
+      click: ({event, object}) ->
         event.preventDefault()
 
-        if object = getObject(event)
+        if object
           editor.remove object
     }]
+
+    editor.tool(@tools.first())
 
     @editor = ->
       editor

@@ -5,6 +5,8 @@ Exploring the magic of HyperCard.
 
 We'll need to be able to create a new card, add buttons, scripts, interactions.
 
+    "use strict"
+
     deck =
       controls: require "./controls"
       objects: require "./data"
@@ -17,10 +19,14 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
 
 Eventually these tools will be plentiful and user defined.
 
-    interactTool =
-      click: (e) ->
-        if object = e.target.$object
-          object.trigger("click", e)
+    getObject = (event) ->
+      node = event.target
+
+      while node
+        if object = node.$object
+          return object
+
+        node = node.parentElement
 
 A card is simply a JSON object. A card can therefore contain any number of
 properties or sub-components.
@@ -35,10 +41,15 @@ The editor/viewer interprets the data of the card object and presents in the HTM
 
       container = document.createElement("div")
       # TODO: Handle all interaction events (touchdown, touchup, etc.)
-      container.addEventListener "click", (e) ->
-        # Proxy events to tool
-        self.tool().click(e)
-      , true
+      container.addEventListener "click", (event) ->
+        object = getObject(event)
+        # Invoke the tool with `object` as the context and additional named arguments
+        self.tool().click.call(object, {
+          editor: self
+          event
+          object
+        })
+      , true # Use Capture
 
       element.appendChild controls
       element.appendChild container
@@ -78,7 +89,7 @@ All this init/hydrate stuff is pretty nasty...
 
         element: element
 
-        tool: Observable interactTool
+        tool: Observable()
 
         toJSON: ->
           I
