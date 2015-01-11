@@ -118,28 +118,35 @@ Features
 Tools
 -----
 
-Adding objects, moving them around, matrix transforms
+[X] Adding objects
 
-Executing click handlers (play sound, go to card, etc.)
+[X] Executing click handlers
 
-Drawing tools
+[X] Inspect objects without triggering clicks
 
-Inspect objects without triggering clicks
+[X] Deleting objects
 
-Deleting objects
+[X] Copying objects
 
-Copying objects
+[ ] Live Edit Objects
 
-Input fields
+[ ] Input fields
 
-Composing Objects
+[ ] Moving objects / Matrix transforms
 
-Cursors
+[ ] Drag and drop template objects
+
+[ ] Composing Objects
+
+[ ] Drawing tools
+
+[ ] Cursors
+
 
 Binding inputs/outputs to properties
 ----------------------------
 
-An object count that stays up to date
+[X] An object count that stays up to date
 
 Navigation
 ----------
@@ -157,6 +164,8 @@ Inception
 
 Documentation
 -------------
+
+Consistent naming and mental model
 
 API Docs
 

@@ -45,4 +45,19 @@
     @count = Observable ->
       editor.objects.size()
   """
+}, {
+  template: """
+    %div(@style)
+      %input(value=@r)
+      %input(value=@g)
+      %input(value=@b)
+  """
+  script: """
+    @r = Observable(128)
+    @g = Observable(64)
+    @b = Observable(256)
+
+    @style = ->
+      "background-color: rgb(\#{@r()}, \#{@g()}, \#{@b()})"
+  """
 }]
