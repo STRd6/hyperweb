@@ -37,6 +37,7 @@
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">deck =
+  controls: require <span class="string">"./controls"</span>
   objects: require <span class="string">"./data"</span>
 
 {exec} = require <span class="string">"./util"</span>
@@ -59,14 +60,7 @@ document.head.appendChild styleElement</code></pre>
             <div class="content"><pre><code class="lang-coffeescript">interactTool =
   click: (e) -&gt;
     <span class="keyword">if</span> object = e.target.$object
-      object.trigger(<span class="string">"click"</span>, e)
-
-cloneTool =
-  click: (e) -&gt;
-    e.preventDefault()
-
-    <span class="keyword">if</span> object = e.target.$object
-      editor.addObject object.copy()</code></pre>
+      object.trigger(<span class="string">"click"</span>, e)</code></pre>
 </div>
         </li>
         
@@ -84,11 +78,18 @@ properties or sub-components.</p>
             <div class="content"><pre><code class="lang-coffeescript">BASE = require <span class="string">"./base_object"</span>
 
 <span class="function"><span class="title">Editor</span></span> = (I={}, self=Model(I)) -&gt;
+  element = document.createElement(<span class="string">"div"</span>)
+  controls = document.createElement(<span class="string">"div"</span>)
+
   container = document.createElement(<span class="string">"div"</span>)
+  <span class="comment"># TODO: Handle all interaction events (touchdown, touchup, etc.)</span>
   container.addEventListener <span class="string">"click"</span>, (e) -&gt;
     <span class="comment"># Proxy events to tool</span>
     self.tool().click(e)
-  , <span class="literal">true</span></code></pre>
+  , <span class="literal">true</span>
+
+  element.appendChild controls
+  element.appendChild container</code></pre>
 </div>
         </li>
         
@@ -107,9 +108,6 @@ properties or sub-components.</p>
       exec code, object,
         editor: self
 
-    <span class="comment"># Add to DOM</span>
-    container.appendChild object.element
-
   <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
     object.__proto__ = BASE
 
@@ -122,6 +120,8 @@ properties or sub-components.</p>
     self.objects.push object
 
     initObject(object)
+    <span class="comment"># Add to DOM</span>
+    container.appendChild object.element
 
   self.extend
     addObject: addObject
@@ -133,7 +133,7 @@ properties or sub-components.</p>
       <span class="comment"># remove object element from DOM</span>
       container.removeChild object.element
 
-    container: container
+    element: element
 
     tool: Observable interactTool
 
@@ -142,13 +142,18 @@ properties or sub-components.</p>
 
   <span class="comment"># TODO: Clean up this hydrate stuff into a plain constructor function</span>
   self.attrData <span class="string">"objects"</span>, hydrate
-  self.objects.forEach initObject
+  self.objects.forEach (object) -&gt;
+    initObject(object)
+    container.appendChild object.element
+
+  self.attrData <span class="string">"controls"</span>, hydrate
+  self.controls.forEach (object) -&gt;
+    initObject(object)
+    controls.appendChild object.element
 
   <span class="keyword">return</span> self
 
-editor = Editor(deck)
-
-document.body.appendChild editor.container</code></pre>
+document.body.appendChild Editor(deck).element</code></pre>
 </div>
         </li>
         
@@ -196,6 +201,7 @@ the fly.</p>
 <p>Copying objects</p>
 <p>Input fields</p>
 <p>Composing Objects</p>
+<p>Cursors</p>
 <h2 id="binding-inputs-outputs-to-properties">Binding inputs/outputs to properties</h2>
 
             </div>
