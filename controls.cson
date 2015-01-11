@@ -40,6 +40,13 @@
 
         if object
           editor.remove object
+    }, {
+      text: "Inspect"
+      click: ({event, object}) ->
+        event.preventDefault()
+
+        if object
+          say JSON.stringify(object.copy(), null, 2)
     }]
 
     editor.tool(@tools.first())

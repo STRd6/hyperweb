@@ -18,7 +18,6 @@
       say "Hello"
   """
 }, {
-  type: "form"
   template: """
     %form(@submit)
       %textarea(@value)

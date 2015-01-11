@@ -21,6 +21,8 @@ shadowed accidentally.
 Look into using {SUPER: SYSTEM}
 
     proto =
+      # TODO: This is really more of a 'toJSON' but if named that it will
+      # infinitely recurse
       copy: ->
         # TODO: may need to formalize calling constructor on resulting data
         # instead of relying on someone else to call it
