@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>base_object</title>
+  <title>handlers</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="base-object">Base Object</h1>
+              <h1 id="handlers">Handlers</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -34,51 +34,28 @@
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">{compileTemplate} = require <span class="string">"./util"</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>The bas class for all the objects.</p>
+            <div class="content"><pre><code class="lang-coffeescript">module.<span class="function"><span class="title">exports</span></span> = (I, self) -&gt;
+  handlers = {}
 
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">module.exports = <span class="function"><span class="title">BaseObject</span></span> = (I={}, self=Model(I)) -&gt;
-  <span class="comment"># Auto-wire observables</span>
-  self.attrObservable <span class="string">"type"</span>, <span class="string">"text"</span>, <span class="string">"script"</span>, <span class="string">"src"</span>, <span class="string">"template"</span>
+  [
+    <span class="string">"click"</span>
+    <span class="string">"mousedown"</span>
+    <span class="string">"mouseup"</span>
+  ].forEach (type) -&gt;
+    handlers[type] = []
 
-  self.include require(<span class="string">"./handlers"</span>)
-
-  element = <span class="literal">null</span>
+    self[type] = (fn) -&gt;
+      <span class="keyword">if</span> fns = handlers[type]
+        fns.push fn
+      <span class="keyword">else</span>
+        handlers[type] = [fn]
 
   self.extend
-    copy: -&gt;
-      BaseObject self.toJSON()
+    trigger: (method, args...) -&gt;
+      handlers[method]?.forEach (fn) -&gt;
+        fn.apply(self, args)
 
-    element: -&gt;
-      <span class="keyword">return</span> element <span class="keyword">if</span> element
-
-      <span class="keyword">if</span> I.template
-        element = compileTemplate(self.template())(self)
-      <span class="keyword">else</span>
-        <span class="comment"># TODO: Default to enabling observables?</span>
-        element = document.createElement self.type() ? <span class="string">"div"</span>
-        element.textContent = self.text()
-        element.src = self.src()
-
-      element.$object = self
-
-      <span class="keyword">return</span> element
-
-    toJSON: -&gt;
-      <span class="comment"># TODO: There's probably room for efficiency improvements, but not for</span>
-      <span class="comment"># simplicity improvements</span>
-
-      JSON.parse(JSON.stringify(I))</code></pre>
+  <span class="keyword">return</span> self</code></pre>
 </div>
         </li>
         

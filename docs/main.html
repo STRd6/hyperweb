@@ -81,7 +81,7 @@ properties or sub-components.</p>
 <p>The editor/viewer interprets the data of the card object and presents in the HTML DOM.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">BASE = require <span class="string">"./base_object"</span>
+            <div class="content"><pre><code class="lang-coffeescript">BaseObject = require <span class="string">"./base_object"</span>
 
 <span class="function"><span class="title">Editor</span></span> = (I={}, self=Model(I)) -&gt;
   element = document.createElement(<span class="string">"div"</span>)
@@ -100,49 +100,32 @@ properties or sub-components.</p>
   , <span class="literal">true</span> <span class="comment"># Use Capture</span>
 
   element.appendChild controls
-  element.appendChild container</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
-              <p>All this init/hydrate stuff is pretty nasty...</p>
+  element.appendChild container
 
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">  <span class="function"><span class="title">initObject</span></span> = (object) -&gt;
-    <span class="keyword">if</span> object.script
-      code = CoffeeScript.compile(object.script, bare: <span class="literal">true</span>)
+  <span class="function"><span class="title">initObject</span></span> = (object) -&gt;
+    <span class="keyword">if</span> script = object.script()
+      code = CoffeeScript.compile(script, bare: <span class="literal">true</span>)
       exec code, object,
         editor: self
 
-  <span class="function"><span class="title">hydrate</span></span> = (object) -&gt;
-    object.__proto__ = BASE
-
-    object
-
-  <span class="function"><span class="title">addObject</span></span> = (object) -&gt;
-    hydrate object
-
-    <span class="comment"># Add to objects list</span>
-    self.objects.push object
-
-    initObject(object)
-    <span class="comment"># Add to DOM</span>
-    container.appendChild object.element
-
   self.extend
-    addObject: addObject
+    addObject: (object) -&gt;
+      <span class="comment"># Add to objects list</span>
+      self.objects.push object
+
+      initObject(object)
+      <span class="comment"># Add to DOM</span>
+      container.appendChild object.element()
+
+    addObjectFromData: (data) -&gt;
+      self.addObject BaseObject data
 
     remove: (object) -&gt;
       <span class="comment"># Remove object from list</span>
       self.objects.remove(object)
 
       <span class="comment"># remove object element from DOM</span>
-      container.removeChild object.element
+      container.removeChild object.element()
 
     element: element
 
@@ -151,16 +134,15 @@ properties or sub-components.</p>
     toJSON: -&gt;
       I
 
-  <span class="comment"># TODO: Clean up this hydrate stuff into a plain constructor function</span>
-  self.attrData <span class="string">"objects"</span>, hydrate
+  self.attrData <span class="string">"objects"</span>, BaseObject
   self.objects.forEach (object) -&gt;
     initObject(object)
-    container.appendChild object.element
+    container.appendChild object.element()
 
-  self.attrData <span class="string">"controls"</span>, hydrate
+  self.attrData <span class="string">"controls"</span>, BaseObject
   self.controls.forEach (object) -&gt;
     initObject(object)
-    controls.appendChild object.element
+    controls.appendChild object.element()
 
   <span class="keyword">return</span> self
 
@@ -169,10 +151,10 @@ document.body.appendChild Editor(deck).element</code></pre>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-5">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>An editor is built into the default viewer for modifying the data of a card on
 the fly.</p>
@@ -185,10 +167,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <h2 id="tools">Tools</h2>
 
@@ -199,10 +181,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-7">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>[X] Adding objects</p>
 <p>[X] Executing click handlers</p>
@@ -225,10 +207,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>[X] An object count that stays up to date</p>
 <h2 id="navigation">Navigation</h2>
@@ -240,10 +222,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Next card, previous card, go to #, go to name</p>
 <p>Save and restore state</p>
@@ -257,10 +239,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-10">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Inception</p>
 <h2 id="documentation">Documentation</h2>
@@ -272,10 +254,10 @@ the fly.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-11">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Consistent naming and mental model</p>
 <p>API Docs</p>
