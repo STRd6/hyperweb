@@ -33,7 +33,7 @@ properties or sub-components.
 
 The editor/viewer interprets the data of the card object and presents in the HTML DOM.
 
-    BASE = require "./base_object"
+    BaseObject = require "./base_object"
 
     Editor = (I={}, self=Model(I)) ->
       element = document.createElement("div")
@@ -54,38 +54,30 @@ The editor/viewer interprets the data of the card object and presents in the HTM
       element.appendChild controls
       element.appendChild container
 
-All this init/hydrate stuff is pretty nasty...
-
       initObject = (object) ->
-        if object.script
-          code = CoffeeScript.compile(object.script, bare: true)
+        if script = object.script()
+          code = CoffeeScript.compile(script, bare: true)
           exec code, object,
             editor: self
 
-      hydrate = (object) ->
-        object.__proto__ = BASE
-
-        object
-
-      addObject = (object) ->
-        hydrate object
-
-        # Add to objects list
-        self.objects.push object
-
-        initObject(object)
-        # Add to DOM
-        container.appendChild object.element
-
       self.extend
-        addObject: addObject
+        addObject: (object) ->
+          # Add to objects list
+          self.objects.push object
+  
+          initObject(object)
+          # Add to DOM
+          container.appendChild object.element()
+
+        addObjectFromData: (data) ->
+          self.addObject BaseObject data
 
         remove: (object) ->
           # Remove object from list
           self.objects.remove(object)
 
           # remove object element from DOM
-          container.removeChild object.element
+          container.removeChild object.element()
 
         element: element
 
@@ -94,16 +86,15 @@ All this init/hydrate stuff is pretty nasty...
         toJSON: ->
           I
 
-      # TODO: Clean up this hydrate stuff into a plain constructor function
-      self.attrData "objects", hydrate
+      self.attrData "objects", BaseObject
       self.objects.forEach (object) ->
         initObject(object)
-        container.appendChild object.element
+        container.appendChild object.element()
 
-      self.attrData "controls", hydrate
+      self.attrData "controls", BaseObject
       self.controls.forEach (object) ->
         initObject(object)
-        controls.appendChild object.element
+        controls.appendChild object.element()
 
       return self
 

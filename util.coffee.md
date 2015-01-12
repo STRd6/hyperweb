@@ -21,7 +21,7 @@ Util
               DataModel(x)
 
             self[name] = Observable(models)
-  
+
             self[name].observe (newValue) ->
               I[name] = newValue.map (x) ->
                 DataModel(x)

@@ -6,7 +6,7 @@
   text: "New Image"
   script: """
     @click ->
-      editor.addObject
+      editor.addObjectFromData
         type: "img"
         src: "https://trello-attachments.s3.amazonaws.com/54a60b08f586e1cafdef3113/350x247/b4e92ef573aa2723d6b16330fa53548d/HyperCardbird-e1338220256722.jpg"
   """
@@ -33,7 +33,7 @@
     @submit = (event) ->
       event.preventDefault()
 
-      editor.addObject CSON.parse @value()
+      editor.addObjectFromData CSON.parse @value()
   """
 }, {
   template: """
