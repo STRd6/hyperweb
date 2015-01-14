@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>base_object</title>
+  <title>form</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="base-object">Base Object</h1>
+              <h1 id="a-magic-form">A magic Form</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -32,79 +32,20 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">{compileTemplate, exec} = require <span class="string">"./util"</span></code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>The bas class for all the objects.</p>
+              <p>Work in progress for creating a form for an arbitrary object&#39;s data.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">module.exports = <span class="function"><span class="title">BaseObject</span></span> = (I={}, self=Model(I)) -&gt;
-  self.include require(<span class="string">"./handlers"</span>)
+            <div class="content"><pre><code class="lang-coffeescript">BaseObject = require <span class="string">"./base_object"</span>
 
-  self.attrObservable <span class="string">"src"</span>, <span class="string">"script"</span>
+template = <span class="string">"""
+  %form
+    - @fields.each (field) -&gt;
+      %label
+        %h2= field.key
+        %textarea= field.value
+"""</span>
 
-  <span class="comment"># Auto-wire observables</span>
-  self.include require <span class="string">"./auto-wire"</span>
-  self.autoWire()
-
-  element = <span class="literal">null</span>
-
-  self.extend
-    copy: -&gt;
-      BaseObject self.toJSON()</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>Initialize the object within its environment.</p>
-
-            </div>
-            <div class="content"><pre><code class="lang-coffeescript">    init: (env) -&gt;
-      <span class="keyword">if</span> script = self.script()
-        code = CoffeeScript.compile(script, bare: <span class="literal">true</span>)
-
-        exec code, self, env
-
-    element: -&gt;
-      <span class="keyword">return</span> element <span class="keyword">if</span> element
-
-      <span class="keyword">if</span> I.template
-        <span class="comment"># TODO: Template should execute in env context</span>
-        element = compileTemplate(self.template())(self)
-      <span class="keyword">else</span>
-        <span class="comment"># TODO: Replace this with a default template, or different</span>
-        <span class="comment"># templates for different objects (buttons, images, etc.)</span>
-        element = document.createElement self.type() ? <span class="string">"div"</span>
-
-        <span class="keyword">if</span> text = self.text?()
-          element.textContent = text
-
-        <span class="keyword">if</span> src = self.src?()
-          element.src = src
-
-      element.$object = self
-
-      <span class="keyword">return</span> element
-
-    toJSON: -&gt;
-      <span class="comment"># TODO: There's probably room for efficiency improvements, but not for</span>
-      <span class="comment"># simplicity improvements</span>
-
-      JSON.parse(JSON.stringify(I))</code></pre>
+module.<span class="function"><span class="title">exports</span></span> = (I={}, self=BaseObject(I)) -&gt;</code></pre>
 </div>
         </li>
         
