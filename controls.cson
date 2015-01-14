@@ -28,7 +28,6 @@
     }, {
       text: "Copy"
       click: ({event, object}) ->
-        console.log event
         event.preventDefault()
 
         if object

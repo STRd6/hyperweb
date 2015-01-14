@@ -1,7 +1,7 @@
 Base Object
 ===========
 
-    {compileTemplate} = require "./util"
+    {compileTemplate, exec} = require "./util"
 
 The bas class for all the objects.
 
@@ -20,16 +20,30 @@ The bas class for all the objects.
         copy: ->
           BaseObject self.toJSON()
 
+Initialize the object within its environment.
+
+        init: (env) ->
+          if script = self.script()
+            code = CoffeeScript.compile(script, bare: true)
+
+            exec code, self, env
+
         element: ->
           return element if element
 
           if I.template
+            # TODO: Template should execute in env context
             element = compileTemplate(self.template())(self)
           else
-            # TODO: Default to enabling observables?
+            # TODO: Replace this with a default template, or different
+            # templates for different objects (buttons, images, etc.)
             element = document.createElement self.type() ? "div"
-            element.textContent = self.text()
-            element.src = self.src()
+
+            if text = self.text?()
+              element.textContent = text
+
+            if src = self.src?()
+              element.src = src
 
           element.$object = self
 

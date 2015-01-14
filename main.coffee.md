@@ -11,8 +11,6 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       controls: require "./controls"
       objects: require "./data"
 
-    {exec} = require "./util"
-
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
     document.head.appendChild styleElement
@@ -55,10 +53,8 @@ The editor/viewer interprets the data of the card object and presents in the HTM
       element.appendChild container
 
       initObject = (object) ->
-        if script = object.script()
-          code = CoffeeScript.compile(script, bare: true)
-          exec code, object,
-            editor: self
+        object.init
+          editor: self
 
       self.extend
         addObject: (object) ->
