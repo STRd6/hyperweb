@@ -48,10 +48,13 @@
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">module.exports = <span class="function"><span class="title">BaseObject</span></span> = (I={}, self=Model(I)) -&gt;
-  <span class="comment"># Auto-wire observables</span>
-  self.attrObservable <span class="string">"type"</span>, <span class="string">"text"</span>, <span class="string">"script"</span>, <span class="string">"src"</span>, <span class="string">"template"</span>
-
   self.include require(<span class="string">"./handlers"</span>)
+
+  self.attrObservable <span class="string">"src"</span>, <span class="string">"script"</span>
+
+  <span class="comment"># Auto-wire observables</span>
+  self.include require <span class="string">"./auto-wire"</span>
+  self.autoWire()
 
   element = <span class="literal">null</span>
 

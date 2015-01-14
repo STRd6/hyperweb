@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>util</title>
+  <title>auto-wire</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="util">Util</h1>
+              <h1 id="auto-wire">Auto Wire</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -34,49 +34,13 @@
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="comment"># TODO: To global or not to global ...</span>
-global.global = global
-global.CSON = require <span class="string">"cson"</span>
-global.Hamlet = require <span class="string">"hamlet"</span>
-global.Observable = require <span class="string">"observable"</span>
-global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
-  alert text
+            <div class="content"><pre><code class="lang-coffeescript">module.<span class="function"><span class="title">exports</span></span> = (I={}, self) -&gt;
+  self.<span class="function"><span class="title">autoWire</span></span> = -&gt;
+    Object.keys(I).forEach (attr) -&gt;
+      <span class="keyword">unless</span> self[attr]
+        self.attrObservable attr
 
-global.Model = <span class="keyword">do</span> -&gt;
-  oldModel = require <span class="string">"model"</span>
-
-  (I, self) -&gt;
-    self = oldModel(I, self)
-
-    self.extend
-      attrData: (name, DataModel) -&gt;
-        <span class="function"><span class="title">models</span></span> = (I[name] <span class="keyword">or</span> []).map (x) -&gt;
-          DataModel(x)
-
-        self[name] = Observable(models)
-
-        self[name].observe (newValue) -&gt;
-          I[name] = newValue.map (x) -&gt;
-            x.I
-
-        <span class="keyword">return</span> self
-
-    <span class="keyword">return</span> self
-
-module.exports =
-  exec: (code, context, params={}) -&gt;
-    names = Object.keys(params)
-    values = names.map (name) -&gt;
-      params[name]
-
-    Function(names..., code).apply(context, values)
-
-  compileTemplate: (source) -&gt;
-    code = Hamlet.Compiler.compile source,
-      compiler: CoffeeScript
-      runtime: <span class="string">"Hamlet"</span>
-
-    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)</code></pre>
+  <span class="keyword">return</span> self</code></pre>
 </div>
         </li>
         
