@@ -6,10 +6,13 @@ Base Object
 The bas class for all the objects.
 
     module.exports = BaseObject = (I={}, self=Model(I)) ->
-      # Auto-wire observables
-      self.attrObservable "type", "text", "script", "src", "template"
-      
       self.include require("./handlers")
+
+      self.attrObservable "src", "script"
+
+      # Auto-wire observables
+      self.include require "./auto-wire"
+      self.autoWire()
 
       element = null
 

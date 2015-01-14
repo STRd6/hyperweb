@@ -46,6 +46,9 @@
       editor.objects.size()
   """
 }, {
+  r: 64
+  g: 64
+  b: 64
   template: """
     %div(@style)
       %input(value=@r)
@@ -53,10 +56,6 @@
       %input(value=@b)
   """
   script: """
-    @r = Observable(128)
-    @g = Observable(64)
-    @b = Observable(256)
-
     @style = ->
       "background-color: rgb(\#{@r()}, \#{@g()}, \#{@b()})"
   """

@@ -24,7 +24,7 @@ Util
 
             self[name].observe (newValue) ->
               I[name] = newValue.map (x) ->
-                DataModel(x)
+                x.I
 
             return self
 

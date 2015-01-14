@@ -64,7 +64,7 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         addObject: (object) ->
           # Add to objects list
           self.objects.push object
-  
+
           initObject(object)
           # Add to DOM
           container.appendChild object.element()
@@ -152,6 +152,8 @@ Self hosting of editor
 ----------------------
 
 Inception
+
+Save entire app/editor as an .html file
 
 Documentation
 -------------
