@@ -44,7 +44,7 @@ deck =
 
 <span class="function"><span class="title">empty</span></span> = (node) -&gt;
   <span class="keyword">while</span> child = node.lastChild
-    node.remove child
+    node.removeChild child
 
 styleElement = document.createElement <span class="string">"style"</span>
 styleElement.innerHTML = require <span class="string">"./style"</span>
@@ -148,13 +148,15 @@ properties or sub-components.</p>
       empty controls
       empty container
 
-      self.objects data.objects.map BaseObject
-      self.controls data.controls.map BaseObject
+      self.objects data.objects.map (x) -&gt; 
+        BaseObject x
+      self.controls data.controls.map (x) -&gt; 
+        BaseObject x
 
       self.init()
 
-  self.attrData <span class="string">"controls"</span>, BaseObject
-  self.attrData <span class="string">"objects"</span>, BaseObject
+  self.attrModels <span class="string">"controls"</span>, BaseObject
+  self.attrModels <span class="string">"objects"</span>, BaseObject
 
   self.init()
 
@@ -228,7 +230,7 @@ the fly.</p>
               </div>
               <p>[ ] Save</p>
 <p>[ ] Load</p>
-<p>[ ] Reload</p>
+<p>[X] Reload</p>
 <h2 id="binding-inputs-outputs-to-properties">Binding inputs/outputs to properties</h2>
 
             </div>
