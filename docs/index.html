@@ -86,16 +86,17 @@ properties or sub-components.</p>
   controls = document.createElement(<span class="string">"div"</span>)
 
   container = document.createElement(<span class="string">"div"</span>)
-  <span class="comment"># TODO: Handle all interaction events (touchdown, touchup, etc.)</span>
-  container.addEventListener <span class="string">"click"</span>, (event) -&gt;
-    object = getObject(event)
-    <span class="comment"># Invoke the tool with `object` as the context and additional named arguments</span>
-    self.tool().click.call(object, {
-      editor: self
-      event
-      object
-    })
-  , <span class="literal">true</span> <span class="comment"># Use Capture</span>
+  <span class="comment"># TODO: Unified touch/click interface</span>
+  [<span class="string">"click"</span>, <span class="string">"mousedown"</span>, <span class="string">"mousemove"</span>, <span class="string">"mouseup"</span>].forEach (name) -&gt;
+    container.addEventListener name, (event) -&gt;
+      object = getObject(event)
+      <span class="comment"># Invoke the tool with `object` as the context and additional named arguments</span>
+      self.tool()[name]?.call(object, {
+        editor: self
+        event
+        object
+      })
+    , <span class="literal">true</span> <span class="comment"># Use Capture</span>
 
   element.appendChild controls
   element.appendChild container

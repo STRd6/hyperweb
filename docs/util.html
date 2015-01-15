@@ -34,16 +34,17 @@
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="comment"># TODO: To global or not to global ...</span>
+            <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"cornerstone"</span>
+
+<span class="comment"># TODO: To global or not to global ...</span>
 global.global = global
 global.CSON = require <span class="string">"cson"</span>
 global.Hamlet = require <span class="string">"hamlet"</span>
-global.Observable = require <span class="string">"observable"</span>
 global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
   alert text
 
 global.Model = <span class="keyword">do</span> -&gt;
-  oldModel = require <span class="string">"model"</span>
+  oldModel = Model
 
   (I, self) -&gt;
     self = oldModel(I, self)
