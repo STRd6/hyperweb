@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1421363339300
+
+CACHE:
+index.html
+../reload.json.js
+https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js
+
+NETWORK:
+https://*
+http://*
+*
