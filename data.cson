@@ -59,4 +59,31 @@
     @style = ->
       "background-color: rgb(\#{@r()}, \#{@g()}, \#{@b()})"
   """
+}, {
+  template: """
+    %form
+      - @fields.each ([key, value]) ->
+        %label
+          %h2= key
+          %input(value=value)
+  """
+  script: """
+    @subject = Observable()
+
+    @subject
+      name: "Duder"
+      age: 27
+
+    @fields = Observable ->
+      subject = @subject()
+
+      if subject
+        Object.keys(subject).map (key) ->
+          value = subject[key]
+          # TODO: Only get observables with setters
+          [key, value]
+        .filter (x) ->
+          x
+    , this
+  """
 }]

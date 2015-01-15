@@ -38,16 +38,17 @@ The editor/viewer interprets the data of the card object and presents in the HTM
       controls = document.createElement("div")
 
       container = document.createElement("div")
-      # TODO: Handle all interaction events (touchdown, touchup, etc.)
-      container.addEventListener "click", (event) ->
-        object = getObject(event)
-        # Invoke the tool with `object` as the context and additional named arguments
-        self.tool().click.call(object, {
-          editor: self
-          event
-          object
-        })
-      , true # Use Capture
+      # TODO: Unified touch/click interface
+      ["click", "mousedown", "mousemove", "mouseup"].forEach (name) ->
+        container.addEventListener name, (event) ->
+          object = getObject(event)
+          # Invoke the tool with `object` as the context and additional named arguments
+          self.tool()[name]?.call(object, {
+            editor: self
+            event
+            object
+          })
+        , true # Use Capture
 
       element.appendChild controls
       element.appendChild container

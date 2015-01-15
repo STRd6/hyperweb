@@ -1,16 +1,17 @@
 Util
 ====
 
+    require "cornerstone"
+
     # TODO: To global or not to global ...
     global.global = global
     global.CSON = require "cson"
     global.Hamlet = require "hamlet"
-    global.Observable = require "observable"
     global.say = (text) ->
       alert text
 
     global.Model = do ->
-      oldModel = require "model"
+      oldModel = Model
 
       (I, self) ->
         self = oldModel(I, self)

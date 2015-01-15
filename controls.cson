@@ -48,6 +48,27 @@
           say JSON.stringify(object.copy(), null, 2)
     }]
 
+    # TODO: Finish move tool
+    moveTool = do ->
+      moveObject = null
+      initialPosition = null
+
+      text: "Move"
+      mousedown: ({event, object}) ->
+        if moveObject = object
+          initialPosition = Point(event.x, event.y)
+
+          console.log initialPosition
+
+      mousemove: ->
+        if moveObject
+          ;
+          
+      mouseup: ->
+        moveObject = null
+
+    @tools.push moveTool
+
     editor.tool(@tools.first())
 
     @editor = ->
