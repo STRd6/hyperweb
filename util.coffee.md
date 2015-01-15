@@ -10,27 +10,6 @@ Util
     global.say = (text) ->
       alert text
 
-    global.Model = do ->
-      oldModel = Model
-
-      (I, self) ->
-        self = oldModel(I, self)
-
-        self.extend
-          attrData: (name, DataModel) ->
-            models = (I[name] or []).map (x) ->
-              DataModel(x)
-
-            self[name] = Observable(models)
-
-            self[name].observe (newValue) ->
-              I[name] = newValue.map (x) ->
-                x.I
-
-            return self
-
-        return self
-
     module.exports =
       exec: (code, context, params={}) ->
         names = Object.keys(params)

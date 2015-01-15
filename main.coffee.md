@@ -13,7 +13,7 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
 
     empty = (node) ->
       while child = node.lastChild
-        node.remove child
+        node.removeChild child
 
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
@@ -77,7 +77,7 @@ The editor/viewer interprets the data of the card object and presents in the HTM
           self.objects.forEach (object) ->
             initObject(object)
             container.appendChild object.element()
-    
+
           self.controls.forEach (object) ->
             initObject(object)
             controls.appendChild object.element()
@@ -100,13 +100,15 @@ The editor/viewer interprets the data of the card object and presents in the HTM
           empty controls
           empty container
 
-          self.objects data.objects.map BaseObject
-          self.controls data.controls.map BaseObject
+          self.objects data.objects.map (x) -> 
+            BaseObject x
+          self.controls data.controls.map (x) -> 
+            BaseObject x
 
           self.init()
 
-      self.attrData "controls", BaseObject
-      self.attrData "objects", BaseObject
+      self.attrModels "controls", BaseObject
+      self.attrModels "objects", BaseObject
 
       self.init()
 
@@ -154,7 +156,7 @@ Actions
 
 [ ] Load
 
-[ ] Reload
+[X] Reload
 
 Binding inputs/outputs to properties
 ----------------------------
