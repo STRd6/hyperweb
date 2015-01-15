@@ -11,6 +11,10 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       controls: require "./controls"
       objects: require "./data"
 
+    empty = (node) ->
+      while child = node.lastChild
+        node.remove child
+
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
     document.head.appendChild styleElement
@@ -69,6 +73,15 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         addObjectFromData: (data) ->
           self.addObject BaseObject data
 
+        init: ->
+          self.objects.forEach (object) ->
+            initObject(object)
+            container.appendChild object.element()
+    
+          self.controls.forEach (object) ->
+            initObject(object)
+            controls.appendChild object.element()
+
         remove: (object) ->
           # Remove object from list
           self.objects.remove(object)
@@ -83,15 +96,19 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         toJSON: ->
           I
 
-      self.attrData "objects", BaseObject
-      self.objects.forEach (object) ->
-        initObject(object)
-        container.appendChild object.element()
+        reload: (data) ->
+          empty controls
+          empty container
+
+          self.objects data.objects.map BaseObject
+          self.controls data.controls.map BaseObject
+
+          self.init()
 
       self.attrData "controls", BaseObject
-      self.controls.forEach (object) ->
-        initObject(object)
-        controls.appendChild object.element()
+      self.attrData "objects", BaseObject
+
+      self.init()
 
       return self
 
@@ -122,7 +139,7 @@ Tools
 
 [ ] Moving objects / Matrix transforms
 
-[ ] Drag and drop template objects
+[ ] Drag and drop templates to create objects
 
 [ ] Composing Objects
 
@@ -130,6 +147,14 @@ Tools
 
 [ ] Cursors
 
+Actions
+-------
+
+[ ] Save
+
+[ ] Load
+
+[ ] Reload
 
 Binding inputs/outputs to properties
 ----------------------------

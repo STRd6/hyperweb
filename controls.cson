@@ -18,6 +18,8 @@
         - select = -> editor.tool tool
         %button(click=select)
           = tool.text
+      - @actions.each (action) ->
+        %button(click=action.perform)= action.name
   """
   script: """
     @tools = Observable [{
@@ -70,6 +72,16 @@
     @tools.push moveTool
 
     editor.tool(@tools.first())
+
+    @actions = Observable [{
+      name: "Save"
+      perform: ->
+        console.log editor.toJSON()
+    }, {
+      name: "Reload"
+      perform: ->
+        editor.reload editor.toJSON()
+    }]
 
     @editor = ->
       editor
