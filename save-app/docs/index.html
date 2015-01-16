@@ -42,9 +42,7 @@ deck =
   controls: require <span class="string">"./controls"</span>
   objects: require <span class="string">"./data"</span>
 
-<span class="function"><span class="title">empty</span></span> = (node) -&gt;
-  <span class="keyword">while</span> child = node.lastChild
-    node.removeChild child
+{empty} = require <span class="string">"./util"</span>
 
 styleElement = document.createElement <span class="string">"style"</span>
 styleElement.innerHTML = require <span class="string">"./style"</span>

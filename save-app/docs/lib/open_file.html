@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>util</title>
+  <title>lib/open_file</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="util">Util</h1>
+              <h1 id="open-file">Open File</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -34,35 +34,9 @@
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"cornerstone"</span>
+            <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"./modal"</span>
 
-require <span class="string">"./lib/coffee-script"</span>
-
-<span class="comment"># TODO: To global or not to global ...</span>
-global.global = global
-global.CSON = require <span class="string">"cson"</span>
-global.Hamlet = require <span class="string">"hamlet"</span>
-global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
-  alert text
-
-module.exports =
-  exec: (code, context, params={}) -&gt;
-    names = Object.keys(params)
-    values = names.map (name) -&gt;
-      params[name]
-
-    Function(names..., code).apply(context, values)
-
-  compileTemplate: (source) -&gt;
-    code = Hamlet.Compiler.compile source,
-      compiler: CoffeeScript
-      runtime: <span class="string">"Hamlet"</span>
-
-    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)
-
-  empty: (node) -&gt;
-    <span class="keyword">while</span> child = node.lastChild
-      node.removeChild child</code></pre>
+module.<span class="function"><span class="title">exports</span></span> = (accept) -&gt;</code></pre>
 </div>
         </li>
         
@@ -203,6 +177,6 @@ module.exports =
 
 }).call(this);
 
-</script><script src="package.js"></script>
+</script><script src="../package.js"></script>
 </body>
 </html>
