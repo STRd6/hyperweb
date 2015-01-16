@@ -3,6 +3,8 @@ Util
 
     require "cornerstone"
 
+    require "./lib/coffee-script"
+
     # TODO: To global or not to global ...
     global.global = global
     global.CSON = require "cson"

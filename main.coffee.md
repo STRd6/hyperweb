@@ -61,6 +61,7 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         object.init
           editor: self
           require: require # TODO: This may have require path implications!
+          PACKAGE: PACKAGE # This also may have implications because it is the editor package, not the app package
 
       self.extend
         addObject: (object) ->
@@ -115,7 +116,10 @@ The editor/viewer interprets the data of the card object and presents in the HTM
 
       return self
 
-    document.body.appendChild Editor(deck).element
+    editor = Editor(deck)
+    document.body.appendChild editor.element
+
+    module.exports = editor
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.

@@ -90,6 +90,19 @@
       name: "Load"
       perform: ->
         openFile("*.json").then editor.load
+    }, {
+      name: "Save App"
+      perform: ->
+        appData = JSON.stringify(editor.toJSON())
+        code = require('require').packageWrapper(PACKAGE, "require('./main').load(\#{appData})")
+
+        # TODO: Better remote deps management
+        content = "<html><head><meta charset='utf-8'><script src='https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js'><\\/script></head><body><script>\#{code}<\\/script></body></html>"
+
+        blob = new Blob [content],
+          type: "text/html"
+
+        saveAs(blob, "app.html")
     }]
 
     @editor = ->
