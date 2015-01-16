@@ -22,6 +22,9 @@
         %button(click=action.perform)= action.name
   """
   script: """
+    # TODO: This require is a path in the editor package
+    saveAs = require("./lib/save_as")
+
     @tools = Observable [{
       text: "Interact"
       click: (params) ->
@@ -65,7 +68,7 @@
       mousemove: ->
         if moveObject
           ;
-          
+
       mouseup: ->
         moveObject = null
 
@@ -76,11 +79,17 @@
     @actions = Observable [{
       name: "Save"
       perform: ->
-        console.log editor.toJSON()
+        blob = new Blob [JSON.stringify(editor.toJSON(), null, 2)],
+          type: "application/json"
+        saveAs(blob, "app.json")
     }, {
       name: "Reload"
       perform: ->
-        editor.reload editor.toJSON()
+        editor.load editor.toJSON()
+    }, {
+      name: "Load"
+      perform: ->
+        openFile("*.json").then editor.load
     }]
 
     @editor = ->

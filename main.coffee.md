@@ -60,6 +60,7 @@ The editor/viewer interprets the data of the card object and presents in the HTM
       initObject = (object) ->
         object.init
           editor: self
+          require: require # TODO: This may have require path implications!
 
       self.extend
         addObject: (object) ->
@@ -96,7 +97,7 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         toJSON: ->
           I
 
-        reload: (data) ->
+        load: (data) ->
           empty controls
           empty container
 
