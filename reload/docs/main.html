@@ -108,6 +108,7 @@ properties or sub-components.</p>
   <span class="function"><span class="title">initObject</span></span> = (object) -&gt;
     object.init
       editor: self
+      require: require <span class="comment"># TODO: This may have require path implications!</span>
 
   self.extend
     addObject: (object) -&gt;
@@ -144,7 +145,7 @@ properties or sub-components.</p>
     toJSON: -&gt;
       I
 
-    reload: (data) -&gt;
+    load: (data) -&gt;
       empty controls
       empty container
 
