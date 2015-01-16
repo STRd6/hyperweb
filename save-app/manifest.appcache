@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1421437023206
+
+CACHE:
+index.html
+../save-app.json.js
+
+
+NETWORK:
+https://*
+http://*
+*
