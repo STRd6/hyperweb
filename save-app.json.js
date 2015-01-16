@@ -83,7 +83,7 @@ window["STRd6/hyperweb:save-app"]({
     },
     "lib/open_file.coffee.md": {
       "path": "lib/open_file.coffee.md",
-      "content": "Open File\n=========\n\n    require \"./modal\"\n\n    module.exports = (accept) ->\n      ",
+      "content": "Open File\n=========\n\n    Modal = require \"./modal\"\n\n    hideModal = (x) ->\n      Modal.hide()\n      x\n\n    module.exports = (accept) ->\n      new Promise (resolve, reject) ->\n        Modal.show readerInput\n          callback: resolve\n          errback: reject\n          accept: accept\n      .then hideModal, (e) ->\n        Modal.hide()\n        throw e\n\n    readerInput = ({callback, errback, encoding, accept}) ->\n      encoding ?= \"UTF-8\"\n\n      input = document.createElement('input')\n      input.type = \"file\"\n      input.setAttribute \"accept\", accept\n\n      input.onchange = ->\n        reader = new FileReader()\n\n        file = input.files[0]\n\n        reader.onload = (evt) ->\n          try\n            data = JSON.parse evt.target.result\n            callback data\n          catch e\n            errback e\n\n        reader.readAsText(file, encoding)\n\n      return input\n",
       "mode": "100644"
     }
   },
@@ -150,7 +150,7 @@ window["STRd6/hyperweb:save-app"]({
     },
     "lib/open_file": {
       "path": "lib/open_file",
-      "content": "(function() {\n  require(\"./modal\");\n\n  module.exports = function(accept) {};\n\n}).call(this);\n",
+      "content": "(function() {\n  var Modal, hideModal, readerInput;\n\n  Modal = require(\"./modal\");\n\n  hideModal = function(x) {\n    Modal.hide();\n    return x;\n  };\n\n  module.exports = function(accept) {\n    return new Promise(function(resolve, reject) {\n      return Modal.show(readerInput({\n        callback: resolve,\n        errback: reject,\n        accept: accept\n      }));\n    }).then(hideModal, function(e) {\n      Modal.hide();\n      throw e;\n    });\n  };\n\n  readerInput = function(_arg) {\n    var accept, callback, encoding, errback, input;\n    callback = _arg.callback, errback = _arg.errback, encoding = _arg.encoding, accept = _arg.accept;\n    if (encoding == null) {\n      encoding = \"UTF-8\";\n    }\n    input = document.createElement('input');\n    input.type = \"file\";\n    input.setAttribute(\"accept\", accept);\n    input.onchange = function() {\n      var file, reader;\n      reader = new FileReader();\n      file = input.files[0];\n      reader.onload = function(evt) {\n        var data, e;\n        try {\n          data = JSON.parse(evt.target.result);\n          return callback(data);\n        } catch (_error) {\n          e = _error;\n          return errback(e);\n        }\n      };\n      return reader.readAsText(file, encoding);\n    };\n    return input;\n  };\n\n}).call(this);\n",
       "type": "blob"
     }
   },
