@@ -26,3 +26,7 @@ Util
           runtime: "Hamlet"
 
         Function("Hamlet", "return " + code)(Hamlet)
+
+      empty: (node) ->
+        while child = node.lastChild
+          node.removeChild child

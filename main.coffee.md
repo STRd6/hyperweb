@@ -11,9 +11,7 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       controls: require "./controls"
       objects: require "./data"
 
-    empty = (node) ->
-      while child = node.lastChild
-        node.removeChild child
+    {empty} = require "./util"
 
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
