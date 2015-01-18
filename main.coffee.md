@@ -100,9 +100,9 @@ The editor/viewer interprets the data of the card object and presents in the HTM
           empty controls
           empty container
 
-          self.objects data.objects.map (x) -> 
+          self.objects data.objects.map (x) ->
             BaseObject x
-          self.controls data.controls.map (x) -> 
+          self.controls data.controls.map (x) ->
             BaseObject x
 
           self.init()
@@ -155,9 +155,9 @@ Tools
 Actions
 -------
 
-[ ] Save
+[X] Save
 
-[ ] Load
+[X] Load
 
 [X] Reload
 
@@ -169,18 +169,16 @@ Binding inputs/outputs to properties
 Navigation
 ----------
 
-Next card, previous card, go to #, go to name
+[ ] Next card, previous card, go to #, go to name
 
-Save and restore state
-
-Save objects in a library for later use
+[X] Save objects as JSON for easy sharing
 
 Self hosting of editor
 ----------------------
 
-Inception
+[ ] Inception
 
-Save entire app/editor as an .html file
+[X] Save entire app/editor as an .html file
 
 Documentation
 -------------
