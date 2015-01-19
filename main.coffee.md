@@ -63,15 +63,20 @@ The editor/viewer interprets the data of the card object and presents in the HTM
 
       self.extend
         addObject: (object) ->
-          # Add to objects list
           self.objects.push object
-
           initObject(object)
-          # Add to DOM
           container.appendChild object.element()
 
         addObjectFromData: (data) ->
           self.addObject BaseObject data
+
+        addControl: (control) ->
+          self.controls.push control
+          initObject(control)
+          controls.appendChild control.element()
+
+        addControlFromData: (data) ->
+          self.addControl BaseObject data
 
         init: ->
           self.objects.forEach (object) ->

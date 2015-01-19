@@ -85,6 +85,10 @@
       perform: ->
         openFile(".json").then editor.addObjectFromData
     }, {
+      name: "Load Control"
+      perform: ->
+        openFile(".json").then editor.addControlFromData
+    }, {
       name: "Save App"
       perform: ->
         if name = prompt "Name", "app"
