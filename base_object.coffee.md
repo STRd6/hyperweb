@@ -8,8 +8,6 @@ The bas class for all the objects.
     module.exports = BaseObject = (I={}, self=Model(I)) ->
       self.include require("./handlers")
 
-      self.attrObservable "src", "script"
-
       # Auto-wire observables
       self.include require "./auto-wire"
       self.autoWire()
@@ -23,7 +21,7 @@ The bas class for all the objects.
 Initialize the object within its environment.
 
         init: (env) ->
-          if script = self.script()
+          if script = self.script?()
             code = CoffeeScript.compile(script, bare: true)
 
             exec code, self, env

@@ -24,6 +24,7 @@ Util
         code = Hamlet.Compiler.compile source,
           compiler: CoffeeScript
           runtime: "Hamlet"
+          exports: false
 
         Function("Hamlet", "return " + code)(Hamlet)
 
