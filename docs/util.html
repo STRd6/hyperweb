@@ -36,33 +36,14 @@
             </div>
             <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"cornerstone"</span>
 
+require <span class="string">"./lib/coffee-script"</span>
+
 <span class="comment"># TODO: To global or not to global ...</span>
 global.global = global
 global.CSON = require <span class="string">"cson"</span>
 global.Hamlet = require <span class="string">"hamlet"</span>
 global.<span class="function"><span class="title">say</span></span> = (text) -&gt;
   alert text
-
-global.Model = <span class="keyword">do</span> -&gt;
-  oldModel = Model
-
-  (I, self) -&gt;
-    self = oldModel(I, self)
-
-    self.extend
-      attrData: (name, DataModel) -&gt;
-        <span class="function"><span class="title">models</span></span> = (I[name] <span class="keyword">or</span> []).map (x) -&gt;
-          DataModel(x)
-
-        self[name] = Observable(models)
-
-        self[name].observe (newValue) -&gt;
-          I[name] = newValue.map (x) -&gt;
-            x.I
-
-        <span class="keyword">return</span> self
-
-    <span class="keyword">return</span> self
 
 module.exports =
   exec: (code, context, params={}) -&gt;
@@ -77,15 +58,18 @@ module.exports =
       compiler: CoffeeScript
       runtime: <span class="string">"Hamlet"</span>
 
-    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)</code></pre>
+    Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)
+
+  empty: (node) -&gt;
+    <span class="keyword">while</span> child = node.lastChild
+      node.removeChild child</code></pre>
 </div>
         </li>
         
     </ul>
   </div>
   <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script><script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script><script>
   (function() {
   var ErrorReporter, bindUpdates, createEditor, exec, findInteractiveElements, readShebang, runners;
 

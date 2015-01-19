@@ -42,6 +42,8 @@ deck =
   controls: require <span class="string">"./controls"</span>
   objects: require <span class="string">"./data"</span>
 
+{empty} = require <span class="string">"./util"</span>
+
 styleElement = document.createElement <span class="string">"style"</span>
 styleElement.innerHTML = require <span class="string">"./style"</span>
 document.head.appendChild styleElement</code></pre>
@@ -104,18 +106,34 @@ properties or sub-components.</p>
   <span class="function"><span class="title">initObject</span></span> = (object) -&gt;
     object.init
       editor: self
+      require: require <span class="comment"># TODO: This may have require path implications!</span>
+      PACKAGE: PACKAGE <span class="comment"># This also may have implications because it is the editor package, not the app package</span>
 
   self.extend
     addObject: (object) -&gt;
-      <span class="comment"># Add to objects list</span>
       self.objects.push object
-
       initObject(object)
-      <span class="comment"># Add to DOM</span>
       container.appendChild object.element()
 
     addObjectFromData: (data) -&gt;
       self.addObject BaseObject data
+
+    addControl: (control) -&gt;
+      self.controls.push control
+      initObject(control)
+      controls.appendChild control.element()
+
+    addControlFromData: (data) -&gt;
+      self.addControl BaseObject data
+
+    init: -&gt;
+      self.objects.forEach (object) -&gt;
+        initObject(object)
+        container.appendChild object.element()
+
+      self.controls.forEach (object) -&gt;
+        initObject(object)
+        controls.appendChild object.element()
 
     remove: (object) -&gt;
       <span class="comment"># Remove object from list</span>
@@ -131,19 +149,28 @@ properties or sub-components.</p>
     toJSON: -&gt;
       I
 
-  self.attrData <span class="string">"objects"</span>, BaseObject
-  self.objects.forEach (object) -&gt;
-    initObject(object)
-    container.appendChild object.element()
+    load: (data) -&gt;
+      empty controls
+      empty container
 
-  self.attrData <span class="string">"controls"</span>, BaseObject
-  self.controls.forEach (object) -&gt;
-    initObject(object)
-    controls.appendChild object.element()
+      self.objects data.objects.map (x) -&gt;
+        BaseObject x
+      self.controls data.controls.map (x) -&gt;
+        BaseObject x
+
+      self.init()
+
+  self.attrModels <span class="string">"controls"</span>, BaseObject
+  self.attrModels <span class="string">"objects"</span>, BaseObject
+
+  self.init()
 
   <span class="keyword">return</span> self
 
-document.body.appendChild Editor(deck).element</code></pre>
+editor = Editor(deck)
+document.body.appendChild editor.element
+
+module.exports = editor</code></pre>
 </div>
         </li>
         
@@ -191,11 +218,11 @@ the fly.</p>
 <p>[ ] Live Edit Objects</p>
 <p>[ ] Input fields</p>
 <p>[ ] Moving objects / Matrix transforms</p>
-<p>[ ] Drag and drop template objects</p>
+<p>[ ] Drag and drop templates to create objects</p>
 <p>[ ] Composing Objects</p>
 <p>[ ] Drawing tools</p>
 <p>[ ] Cursors</p>
-<h2 id="binding-inputs-outputs-to-properties">Binding inputs/outputs to properties</h2>
+<h2 id="actions">Actions</h2>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -209,8 +236,10 @@ the fly.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>[X] An object count that stays up to date</p>
-<h2 id="navigation">Navigation</h2>
+              <p>[X] Save</p>
+<p>[X] Load</p>
+<p>[X] Reload</p>
+<h2 id="binding-inputs-outputs-to-properties">Binding inputs/outputs to properties</h2>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -224,10 +253,8 @@ the fly.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Next card, previous card, go to #, go to name</p>
-<p>Save and restore state</p>
-<p>Save objects in a library for later use</p>
-<h2 id="self-hosting-of-editor">Self hosting of editor</h2>
+              <p>[X] An object count that stays up to date</p>
+<h2 id="navigation">Navigation</h2>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -241,9 +268,9 @@ the fly.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>Inception</p>
-<p>Save entire app/editor as an .html file</p>
-<h2 id="documentation">Documentation</h2>
+              <p>[ ] Next card, previous card, go to #, go to name</p>
+<p>[X] Save objects as JSON for easy sharing</p>
+<h2 id="self-hosting-of-editor">Self hosting of editor</h2>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -256,6 +283,22 @@ the fly.</p>
             <div class="annotation">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>[ ] Inception</p>
+<p>[X] Save entire app/editor as an .html file</p>
+<h2 id="documentation">Documentation</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Consistent naming and mental model</p>
 <p>API Docs</p>
@@ -272,8 +315,7 @@ the fly.</p>
     </ul>
   </div>
   <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script><script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script><script>
   (function() {
   var ErrorReporter, bindUpdates, createEditor, exec, findInteractiveElements, readShebang, runners;
 

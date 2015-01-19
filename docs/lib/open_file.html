@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>Ideas</title>
+  <title>lib/open_file</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,10 +18,10 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="ideas">Ideas</h1>
+              <h1 id="open-file">Open File</h1>
 
             </div>
-            <div class="content"><pre><code>
+            <div class="content"><pre><code class="lang-coffeescript">
 </code></pre>
 </div>
         </li>
@@ -32,97 +32,46 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <h2 id="bootstrapping">Bootstrapping</h2>
-
+              
             </div>
-            <div class="content"><pre><code>
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>For the editor to be self hosting we need some tiny kernel that can start up
-and process json objects.</p>
-<p>One possibility is to have a kernel that is essentially <code>eval</code> which then
-bootstraps the system by evaluating the script field of objects of type <code>exec</code>.</p>
-<p>The kernel can also have one method to add additional type handlers. That may be
-enough to get everything running.</p>
-<h2 id="types">Types</h2>
+            <div class="content"><pre><code class="lang-coffeescript">Modal = require <span class="string">"./modal"</span>
 
-            </div>
-            <div class="content"><pre><code>
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>We&#39;ll want to be able to register templates for various card types. Templates
-should be jade or similar.</p>
-<p>When a card with a type that matches a template is created it will render that
-template into the DOM.</p>
-<h2 id="data-binding">Data-Binding</h2>
+<span class="function"><span class="title">hideModal</span></span> = (x) -&gt;
+  Modal.hide()
+  x
 
-            </div>
-            <div class="content"><pre><code>
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
-              <p>Having bi-directional live data binding will be really nice. Like binding a form
-with R,G,B fields to the background color of an object, or binding user input
-to an event stream.</p>
-<h2 id="publishing">Publishing</h2>
+module.<span class="function"><span class="title">exports</span></span> = (accept) -&gt;
+  <span class="keyword">new</span> Promise (resolve, reject) -&gt;
+    Modal.show readerInput
+      callback: resolve
+      errback: reject
+      accept: accept
+  .<span class="keyword">then</span> hideModal, (e) -&gt;
+    Modal.hide()
+    <span class="keyword">throw</span> e
 
-            </div>
-            <div class="content"><pre><code>
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>Decks should bundle the editor and runtime when publishing so that anyone can
-modify, remix, and republish.</p>
-<h2 id="additional-concerns">Additional concerns</h2>
+<span class="function"><span class="title">readerInput</span></span> = ({callback, errback, encoding, accept}) -&gt;
+  encoding ?= <span class="string">"UTF-8"</span>
 
-            </div>
-            <div class="content"><pre><code>
-</code></pre>
-</div>
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              <div class="pilwrap">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>How do dependencies and requirements work?</p>
-<p>How do we manage versioning the bundled editor and runtime?</p>
+  input = document.createElement(<span class="string">'input'</span>)
+  input.type = <span class="string">"file"</span>
+  input.setAttribute <span class="string">"accept"</span>, accept
 
-            </div>
-            <div class="content"><pre><code>
-</code></pre>
+  input.<span class="function"><span class="title">onchange</span></span> = -&gt;
+    reader = <span class="keyword">new</span> FileReader()
+
+    file = input.files[<span class="number">0</span>]
+
+    reader.<span class="function"><span class="title">onload</span></span> = (evt) -&gt;
+      <span class="keyword">try</span>
+        data = JSON.parse evt.target.result
+        callback data
+      <span class="keyword">catch</span> e
+        errback e
+
+    reader.readAsText(file, encoding)
+
+  <span class="keyword">return</span> input</code></pre>
 </div>
         </li>
         
@@ -263,6 +212,6 @@ modify, remix, and republish.</p>
 
 }).call(this);
 
-</script><script src="package.js"></script>
+</script><script src="../package.js"></script>
 </body>
 </html>
