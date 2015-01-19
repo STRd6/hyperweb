@@ -111,15 +111,20 @@ properties or sub-components.</p>
 
   self.extend
     addObject: (object) -&gt;
-      <span class="comment"># Add to objects list</span>
       self.objects.push object
-
       initObject(object)
-      <span class="comment"># Add to DOM</span>
       container.appendChild object.element()
 
     addObjectFromData: (data) -&gt;
       self.addObject BaseObject data
+
+    addControl: (control) -&gt;
+      self.controls.push control
+      initObject(control)
+      controls.appendChild control.element()
+
+    addControlFromData: (data) -&gt;
+      self.addControl BaseObject data
 
     init: -&gt;
       self.objects.forEach (object) -&gt;
