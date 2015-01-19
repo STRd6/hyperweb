@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1421706680609
+
+CACHE:
+index.html
+../editable-fields.json.js
+
+
+NETWORK:
+https://*
+http://*
+*
