@@ -6,7 +6,7 @@ Messing around with some modal BS
     modal = document.createElement "div"
     modal.id = "modal"
 
-    modal.addEventListener (e) ->
+    modal.addEventListener "click", (e) ->
       if e.target is this
         Modal.hide()
 
