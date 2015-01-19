@@ -18,15 +18,28 @@
         - select = -> editor.tool tool
         %button(click=select)
           = tool.text
+      - @actions.each (action) ->
+        %button(click=action.perform)= action.name
   """
   script: """
+    # TODO: This require is a path in the editor package
+    saveAs = require("./lib/save_as")
+    openFile = require("./lib/open_file")
+
+    saveJSON = (name, data) ->
+      blob = new Blob [JSON.stringify(data, null, 2)],
+        type: "application/json"
+      saveAs(blob, "\#{name}.json")
+
     @tools = Observable [{
       text: "Interact"
+      cursor: "pointer"
       click: (params) ->
         if this
           @trigger("click", params)
     }, {
       text: "Copy"
+      cursor: "copy"
       click: ({event, object}) ->
         event.preventDefault()
 
@@ -34,6 +47,7 @@
           editor.addObject object.copy()
     }, {
       text: "Delete"
+      cursor: "not-allowed"
       click: ({event, object}) ->
         event.preventDefault()
 
@@ -41,35 +55,54 @@
           editor.remove object
     }, {
       text: "Inspect"
+      cursor: "help"
       click: ({event, object}) ->
         event.preventDefault()
 
         if object
           say JSON.stringify(object.copy(), null, 2)
+    }, {
+      text: "Save Object"
+      cursor: "alias"
+      click: ({object}) ->
+        if object
+          if name = prompt "Name", "object"
+            saveJSON name, object.toJSON()
     }]
 
-    # TODO: Finish move tool
-    moveTool = do ->
-      moveObject = null
-      initialPosition = null
-
-      text: "Move"
-      mousedown: ({event, object}) ->
-        if moveObject = object
-          initialPosition = Point(event.x, event.y)
-
-          console.log initialPosition
-
-      mousemove: ->
-        if moveObject
-          ;
-          
-      mouseup: ->
-        moveObject = null
-
-    @tools.push moveTool
-
     editor.tool(@tools.first())
+
+    @actions = Observable [{
+      name: "Save State"
+      perform: ->
+        saveJSON("app", editor.toJSON())
+    }, {
+      name: "Load State"
+      perform: ->
+        openFile(".json").then editor.load
+    }, {
+      name: "Load Object"
+      perform: ->
+        openFile(".json").then editor.addObjectFromData
+    }, {
+      name: "Load Control"
+      perform: ->
+        openFile(".json").then editor.addControlFromData
+    }, {
+      name: "Save App"
+      perform: ->
+        if name = prompt "Name", "app"
+          appData = JSON.stringify(editor.toJSON())
+          code = require('require').packageWrapper(PACKAGE, "require('./main').load(\#{appData})")
+
+          # TODO: Better remote deps management
+          content = "<html><head><meta charset='utf-8'></head><body><script>\#{code}<\\/script></body></html>"
+
+          blob = new Blob [content],
+            type: "text/html"
+
+          saveAs(blob, "\#{name}.html")
+    }]
 
     @editor = ->
       editor

@@ -11,6 +11,8 @@ We'll need to be able to create a new card, add buttons, scripts, interactions.
       controls: require "./controls"
       objects: require "./data"
 
+    {empty} = require "./util"
+
     styleElement = document.createElement "style"
     styleElement.innerHTML = require "./style"
     document.head.appendChild styleElement
@@ -56,18 +58,34 @@ The editor/viewer interprets the data of the card object and presents in the HTM
       initObject = (object) ->
         object.init
           editor: self
+          require: require # TODO: This may have require path implications!
+          PACKAGE: PACKAGE # This also may have implications because it is the editor package, not the app package
 
       self.extend
         addObject: (object) ->
-          # Add to objects list
           self.objects.push object
-
           initObject(object)
-          # Add to DOM
           container.appendChild object.element()
 
         addObjectFromData: (data) ->
           self.addObject BaseObject data
+
+        addControl: (control) ->
+          self.controls.push control
+          initObject(control)
+          controls.appendChild control.element()
+
+        addControlFromData: (data) ->
+          self.addControl BaseObject data
+
+        init: ->
+          self.objects.forEach (object) ->
+            initObject(object)
+            container.appendChild object.element()
+
+          self.controls.forEach (object) ->
+            initObject(object)
+            controls.appendChild object.element()
 
         remove: (object) ->
           # Remove object from list
@@ -83,19 +101,28 @@ The editor/viewer interprets the data of the card object and presents in the HTM
         toJSON: ->
           I
 
-      self.attrData "objects", BaseObject
-      self.objects.forEach (object) ->
-        initObject(object)
-        container.appendChild object.element()
+        load: (data) ->
+          empty controls
+          empty container
 
-      self.attrData "controls", BaseObject
-      self.controls.forEach (object) ->
-        initObject(object)
-        controls.appendChild object.element()
+          self.objects data.objects.map (x) ->
+            BaseObject x
+          self.controls data.controls.map (x) ->
+            BaseObject x
+
+          self.init()
+
+      self.attrModels "controls", BaseObject
+      self.attrModels "objects", BaseObject
+
+      self.init()
 
       return self
 
-    document.body.appendChild Editor(deck).element
+    editor = Editor(deck)
+    document.body.appendChild editor.element
+
+    module.exports = editor
 
 An editor is built into the default viewer for modifying the data of a card on
 the fly.
@@ -122,7 +149,7 @@ Tools
 
 [ ] Moving objects / Matrix transforms
 
-[ ] Drag and drop template objects
+[ ] Drag and drop templates to create objects
 
 [ ] Composing Objects
 
@@ -130,6 +157,14 @@ Tools
 
 [ ] Cursors
 
+Actions
+-------
+
+[X] Save
+
+[X] Load
+
+[X] Reload
 
 Binding inputs/outputs to properties
 ----------------------------
@@ -139,18 +174,16 @@ Binding inputs/outputs to properties
 Navigation
 ----------
 
-Next card, previous card, go to #, go to name
+[ ] Next card, previous card, go to #, go to name
 
-Save and restore state
-
-Save objects in a library for later use
+[X] Save objects as JSON for easy sharing
 
 Self hosting of editor
 ----------------------
 
-Inception
+[ ] Inception
 
-Save entire app/editor as an .html file
+[X] Save entire app/editor as an .html file
 
 Documentation
 -------------
