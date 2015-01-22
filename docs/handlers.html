@@ -55,6 +55,10 @@
       handlers[method]?.forEach (fn) -&gt;
         fn.apply(self, args)
 
+    clearHandlers: -&gt;
+      Object.keys(handlers).forEach (type) -&gt;
+        handlers[type] = []
+
   <span class="keyword">return</span> self</code></pre>
 </div>
         </li>

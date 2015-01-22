@@ -38,7 +38,19 @@
   self.<span class="function"><span class="title">autoWire</span></span> = -&gt;
     Object.keys(I).forEach (attr) -&gt;
       <span class="keyword">unless</span> self[attr]
-        self.attrObservable attr
+        self.prop attr
+
+  properties = {}
+
+  self.<span class="function"><span class="title">prop</span></span> = (name) -&gt;
+    properties[name] = {}
+
+    self.attrObservable name
+
+  self.<span class="function"><span class="title">properties</span></span> = -&gt;
+    Object.keys(properties).map (key) -&gt;
+      value = self[key]
+      [key, value]
 
   <span class="keyword">return</span> self</code></pre>
 </div>

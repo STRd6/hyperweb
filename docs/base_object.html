@@ -34,7 +34,20 @@
               </div>
               
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">{compileTemplate, exec} = require <span class="string">"./util"</span></code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">{compileTemplate, exec} = require <span class="string">"./util"</span>
+
+templates =
+  img: <span class="string">"""
+    %img(@src)
+  """</span>
+
+<span class="function"><span class="title">defaultTemplate</span></span> = (type) -&gt;
+  <span class="keyword">if</span> template = templates[type]
+    <span class="keyword">return</span> template
+  <span class="keyword">else</span>
+    <span class="string">"""
+      %<span class="subst">#{type}</span>= @text
+    """</span></code></pre>
 </div>
         </li>
         
@@ -50,13 +63,17 @@
             <div class="content"><pre><code class="lang-coffeescript">module.exports = <span class="function"><span class="title">BaseObject</span></span> = (I={}, self=Model(I)) -&gt;
   self.include require(<span class="string">"./handlers"</span>)
 
-  self.attrObservable <span class="string">"src"</span>, <span class="string">"script"</span>
-
   <span class="comment"># Auto-wire observables</span>
   self.include require <span class="string">"./auto-wire"</span>
   self.autoWire()
 
   element = <span class="literal">null</span>
+
+  <span class="function"><span class="title">execScript</span></span> = (env) -&gt;
+    <span class="keyword">if</span> script = self.script?()
+      code = CoffeeScript.compile(script, bare: <span class="literal">true</span>)
+
+      exec code, self, env
 
   self.extend
     copy: -&gt;
@@ -74,10 +91,26 @@
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">    init: (env) -&gt;
-      <span class="keyword">if</span> script = self.script()
-        code = CoffeeScript.compile(script, bare: <span class="literal">true</span>)
+      execScript(env)
 
-        exec code, self, env
+      <span class="function"><span class="title">reload</span></span> = -&gt;
+        self.clearHandlers()
+
+        oldElement = element
+        element = <span class="literal">null</span>
+
+        <span class="comment"># Re-exec script</span>
+        execScript(env)
+
+        <span class="comment"># Replace old element with new element</span>
+        editor.replaceElement(oldElement, self.element())
+
+      {editor} = env
+      <span class="comment"># TODO: Is there a better way to bind these reload events?</span>
+      <span class="comment"># Maybe the editing widget should probably be responsible for</span>
+      <span class="comment"># triggering reloads when the element changes...</span>
+      self.script?.observe? reload
+      self.template?.observe? reload
 
     element: -&gt;
       <span class="keyword">return</span> element <span class="keyword">if</span> element
@@ -86,15 +119,10 @@
         <span class="comment"># TODO: Template should execute in env context</span>
         element = compileTemplate(self.template())(self)
       <span class="keyword">else</span>
-        <span class="comment"># TODO: Replace this with a default template, or different</span>
-        <span class="comment"># templates for different objects (buttons, images, etc.)</span>
-        element = document.createElement self.type() ? <span class="string">"div"</span>
-
-        <span class="keyword">if</span> text = self.text?()
-          element.textContent = text
-
-        <span class="keyword">if</span> src = self.src?()
-          element.src = src
+        <span class="keyword">if</span> type = self.type?()
+          element = compileTemplate(defaultTemplate(type))(self)
+        <span class="keyword">else</span>
+          element = compileTemplate(defaultTemplate(<span class="string">"div"</span>))(self)
 
       element.$object = self
 

@@ -57,6 +57,7 @@ module.exports =
     code = Hamlet.Compiler.compile source,
       compiler: CoffeeScript
       runtime: <span class="string">"Hamlet"</span>
+      exports: <span class="literal">false</span>
 
     Function(<span class="string">"Hamlet"</span>, <span class="string">"return "</span> + code)(Hamlet)
 
