@@ -130,8 +130,6 @@
           click: ->
             self.lcd self.lcd() + c
 
-    console.log @buttonRows
-
     @lcd = Observable("")
   '''
 }]
