@@ -136,11 +136,16 @@ properties or sub-components.</p>
         controls.appendChild object.element()
 
     remove: (object) -&gt;
-      <span class="comment"># Remove object from list</span>
-      self.objects.remove(object)
+      <span class="keyword">if</span> self.objects().include object
+        <span class="comment"># remove object element from DOM        </span>
+        container.removeChild object.element()
 
-      <span class="comment"># remove object element from DOM</span>
-      container.removeChild object.element()
+        <span class="comment"># Remove object from list</span>
+        self.objects.remove(object)
+
+    replaceElement: (oldElement, newElement) -&gt;
+      container.insertBefore newElement, oldElement.nextSibling
+      container.removeChild oldElement
 
     element: element
 
