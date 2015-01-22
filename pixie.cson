@@ -1,5 +1,5 @@
 dependencies:
   cornerstone: "distri/cornerstone:v0.2.8"
   cson: "distri/cson:v0.1.0"
-  hamlet: "distri/hamlet:v0.0.1"
+  hamlet: "distri/hamlet:v0.7.0-pre.2"
   require: "distri/require:v0.5.0"

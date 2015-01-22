@@ -34,9 +34,9 @@
     @tools = Observable [{
       text: "Interact"
       cursor: "pointer"
-      click: (params) ->
-        if this
-          @trigger("click", params)
+      click: ({object, event}) ->
+        if object
+          object.trigger("click", event)
     }, {
       text: "Copy"
       cursor: "copy"

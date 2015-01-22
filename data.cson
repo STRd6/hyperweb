@@ -62,28 +62,41 @@
 }, {
   template: """
     %form
-      - @fields.each ([key, value]) ->
-        %label
-          %h2= key
-          %input(value=value)
+      - console.log "render"
+      %button(click=@choose) Choose
+      - if fields = @fields()
+        - fields.forEach ([key, value]) ->
+          %label
+            %h2= key
+            %input(value=value)
   """
   script: """
+    self = this
+
     @subject = Observable()
 
-    @subject
-      name: "Duder"
-      age: 27
+    previousTool = null
+    chooserTool =
+      click: ({event, object}) ->
+        event.preventDefault()
 
-    @fields = Observable ->
+        if object
+          self.subject object
+          editor.tool previousTool
+
+    @choose = (e) ->
+      e.preventDefault()
+
+      previousTool = editor.tool()
+      editor.tool chooserTool
+
+    # TODO: Field subtemplates
+
+    @fields = ->
       subject = @subject()
 
-      if subject
-        Object.keys(subject).map (key) ->
-          value = subject[key]
-          # TODO: Only get observables with setters
-          [key, value]
-        .filter (x) ->
+      if props = subject?.properties?()
+        props.filter (x) ->
           x
-    , this
   """
 }]

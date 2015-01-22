@@ -88,11 +88,16 @@ The editor/viewer interprets the data of the card object and presents in the HTM
             controls.appendChild object.element()
 
         remove: (object) ->
-          # Remove object from list
-          self.objects.remove(object)
+          if self.objects().include object
+            # remove object element from DOM        
+            container.removeChild object.element()
 
-          # remove object element from DOM
-          container.removeChild object.element()
+            # Remove object from list
+            self.objects.remove(object)
+
+        replaceElement: (oldElement, newElement) ->
+          container.insertBefore newElement, oldElement.nextSibling
+          container.removeChild oldElement
 
         element: element
 
