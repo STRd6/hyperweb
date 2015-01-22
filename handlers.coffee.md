@@ -22,4 +22,8 @@ Handlers
           handlers[method]?.forEach (fn) ->
             fn.apply(self, args)
 
+        clearHandlers: ->
+          Object.keys(handlers).forEach (type) ->
+            handlers[type] = []
+
       return self
