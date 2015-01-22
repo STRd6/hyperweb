@@ -71,7 +71,7 @@
             %input(value=value)
   """
   script: """
-    self = this
+    self = this # TODO: This should be set up for us
 
     @subject = Observable()
 
@@ -99,4 +99,39 @@
         props.filter (x) ->
           x
   """
+}, {
+  name: "Calculator"
+  template: """
+    .calculator
+      %input(value=@lcd)
+      - @buttonRows.each (row) ->
+        .row
+          - row.each (button) ->
+            %button(click=button.click)= button.text
+  """
+  script: '''
+    self = this
+
+    rows = """
+      789/
+      456*
+      123-
+      0.=+
+    """
+
+    @buttonRows = rows.split("\\n").map (row) ->
+      row.split("").map (c) ->
+        if c is "="
+          text: c
+          click: ->
+            self.lcd eval self.lcd()
+        else
+          text: c
+          click: ->
+            self.lcd self.lcd() + c
+
+    console.log @buttonRows
+
+    @lcd = Observable("")
+  '''
 }]
